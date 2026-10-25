@@ -1,0 +1,2729 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>KENO QUANT PRO — Biểu Đồ Nến Chuẩn ICT & Vietlott Real-Time</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- TradingView Official Lightweight Charts -->
+  <script src="https://unpkg.com/lightweight-charts@4.1.3/dist/lightweight-charts.standalone.production.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              bg: '#07090e',
+              card: '#0f1420',
+              cardHover: '#161d2e',
+              border: '#1e293b',
+              borderGold: 'rgba(245, 158, 11, 0.35)',
+              gold: '#f59e0b',
+              goldLight: '#fbbf24',
+              emerald: '#10b981',
+              cyan: '#06b6d4',
+              hot: '#ef4444',
+              purple: '#8b5cf6'
+            }
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: radial-gradient(circle at 50% 0%, #111827 0%, #07090e 70%);
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .gold-glow {
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.18);
+    }
+    .ball-sm {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 0.75rem;
+      font-family: monospace;
+    }
+    .ball-md {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 9999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      font-family: monospace;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* CHẾ ĐỘ TIẾT KIỆM CPU/GPU TUYỆT ĐỐI KHI ĐỔI SANG ỨNG DỤNG KHÁC (GAME, WORK) */
+    .eco-badge {
+      display: none;
+    }
+    body.eco-mode .eco-badge {
+      display: inline-flex;
+    }
+
+    /* TỰ ĐỘNG CÂN CHỈNH VỪA KHÍT MÀN HÌNH 720p / 768p / LAPTOP (KHÔNG BỊ CUỘN TRANG) */
+    @media (max-height: 768px) {
+      body { padding-bottom: 0px !important; }
+      header { padding-top: 4px !important; padding-bottom: 4px !important; }
+      nav > div { padding-top: 2px !important; padding-bottom: 2px !important; }
+      main { padding: 4px !important; }
+      #tradingviewWorkspace > div:first-child { padding-top: 2px !important; padding-bottom: 2px !important; }
+      #chartContainerParent { height: 285px !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-20 md:pb-6 antialiased">
+
+  <!-- REAL-TIME FLASH NOTIFICATION TOAST (GÓC DƯỚI PHẢI, KHÔNG CHE KHUẤT BIỂU ĐỒ) -->
+  <div id="toastNotification" class="fixed bottom-4 right-4 z-50 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-4 max-w-xs w-full px-2">
+    <div class="p-2.5 rounded-xl bg-[#1e222d] text-white shadow-2xl flex items-center justify-between border border-emerald-500/40">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="bell-ring" class="w-4 h-4 text-emerald-400 flex-shrink-0 animate-bounce"></i>
+        <div class="text-xs">
+          <strong id="toastTitle" class="text-emerald-300">ĐÃ TỰ ĐỘNG CẬP NHẬT!</strong>
+          <div id="toastMsg" class="text-[11px] text-slate-300 font-mono">Kỳ mới đã nổ.</div>
+        </div>
+      </div>
+      <button onclick="hideToast()" class="ml-2 text-slate-400 hover:text-white text-base leading-none">&times;</button>
+    </div>
+  </div>
+
+  <!-- LUXURY TOP BAR -->
+  <header class="border-b border-brand-border bg-brand-bg relative z-30 px-3 sm:px-6 py-2">
+    <div class="max-w-[1400px] mx-auto flex items-center justify-between">
+      
+      <!-- Brand & Status -->
+      <div class="flex items-center space-x-2.5">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 to-yellow-300 flex items-center justify-center font-black text-slate-950 shadow-md shadow-amber-500/20">
+          <i data-lucide="candlestick-chart" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-1.5">
+            <h1 class="text-sm sm:text-base font-black tracking-wide text-white">KENO QUANT <span class="text-brand-gold">PRO</span></h1>
+            <span class="px-1.5 py-0.2 text-[9px] font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1 font-mono">
+              CHUẨN ICT
+            </span>
+            <span class="eco-badge px-1.5 py-0.2 text-[9px] font-bold rounded bg-emerald-950/90 text-emerald-300 border border-emerald-500/50 items-center gap-1 font-mono">
+              💤 TIẾT KIỆM (0% CPU)
+            </span>
+          </div>
+          <p class="text-[10px] text-slate-400 flex items-center gap-1 font-mono">
+            <span id="headerSyncText">Kỳ vừa xổ: #0300514</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Live Countdown Widget -->
+      <div class="flex items-center space-x-2">
+        <div class="px-3 py-1.5 rounded-lg bg-brand-card border border-brand-borderGold flex items-center space-x-2 text-xs font-mono">
+          <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-400 animate-pulse"></i>
+          <div>
+            <span class="text-slate-400 text-[10px] block leading-none">Mở thưởng sau:</span>
+            <span id="countdownTimer" class="text-amber-400 font-bold text-xs sm:text-sm">05:24</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- DESKTOP / TABLET TABS -->
+  <nav class="hidden md:block border-b border-brand-border/60 bg-brand-card/40">
+    <div class="max-w-[1400px] mx-auto flex space-x-1 px-4 py-1.5 text-xs font-semibold overflow-x-auto no-scrollbar">
+      <button onclick="switchTab('chart')" id="dtab-chart" class="dtab-btn px-3 py-1.5 rounded-md text-amber-400 bg-amber-500/10 border border-amber-500/30 flex items-center gap-1.5">
+        <i data-lucide="candlestick-chart" class="w-3.5 h-3.5"></i>
+        <span>1. Biểu Đồ Nến ICT (Clean)</span>
+      </button>
+      <button onclick="switchTab('predict')" id="dtab-predict" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+        <span>2. Dự Báo Kỳ Tới (%)</span>
+      </button>
+      <button onclick="switchTab('matrix')" id="dtab-matrix" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+        <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+        <span>3. Ma Trận 80 Bóng</span>
+      </button>
+      <button onclick="switchTab('wheel')" id="dtab-wheel" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+        <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
+        <span>4. Xưởng Dàn Steiner</span>
+      </button>
+      <button onclick="switchTab('overlap')" id="dtab-overlap" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+        <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+        <span>5. Độ Trùng 45 Tỷ Cặp</span>
+      </button>
+      <button onclick="switchTab('history')" id="dtab-history" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+        <i data-lucide="history" class="w-3.5 h-3.5"></i>
+        <span>6. Kho Dữ Liệu</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN VIEWPORT (WIDE TRADINGVIEW DESKTOP & MOBILE RESPONSIVE) -->
+  <main class="flex-1 max-w-[1400px] w-full mx-auto p-1 sm:p-1.5 space-y-1">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: BIỂU ĐỒ NẾN CHUẨN ICT (CLEAN NAKED CANDLESTICK) -->
+    <!-- ======================================================== -->
+    <section id="view-chart" class="tab-view space-y-1">
+      
+      <!-- TRADINGVIEW PRO WORKSPACE (CHUẨN VN.TRADINGVIEW.COM) -->
+      <div id="tradingviewWorkspace" class="rounded-xl bg-[#131722] border border-[#2a2e39] shadow-2xl overflow-hidden transition-all duration-300">
+        
+        <!-- TRADINGVIEW TOP TOOLBAR (RESPONSIVE NO-OVERFLOW) -->
+        <div class="flex items-center justify-between gap-1 bg-[#1e222d] px-2 py-1 border-b border-[#2a2e39] text-xs font-sans select-none overflow-x-auto no-scrollbar">
+          
+          <!-- Left Top Bar: Symbol, Timeframes, Chart Types -->
+          <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+            
+            <!-- Ticker Symbol -->
+            <div class="flex items-center space-x-1 px-2 py-0.5 rounded bg-[#2a2e39] text-amber-400 font-bold border border-amber-500/30 font-mono text-[11px]">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="tracking-wide">KENO</span>
+              <span id="tickerTimeframeText" class="text-[9px] text-amber-300 font-bold">10M</span>
+            </div>
+
+            <!-- Khung Thời Gian (Timeframe: 10M, 30M, 1H, 1D) -->
+            <div class="flex items-center space-x-0.5 bg-[#131722] p-0.5 rounded border border-[#2a2e39] font-mono text-[10px]">
+              <button onclick="setTimeframe('10M')" id="tf-10M" class="tf-btn active px-1.5 py-0.5 rounded bg-blue-600 text-white font-bold" title="Khung 10 Phút (1 kỳ quay)">10M</button>
+              <button onclick="setTimeframe('30M')" id="tf-30M" class="tf-btn px-1.5 py-0.5 rounded text-slate-400 hover:text-white" title="Khung 30 Phút (gộp 3 kỳ quay)">30M</button>
+              <button onclick="setTimeframe('1H')" id="tf-1H" class="tf-btn px-1.5 py-0.5 rounded text-slate-400 hover:text-white" title="Khung 1 Giờ (gộp 6 kỳ quay)">1H</button>
+              <button onclick="setTimeframe('1D')" id="tf-1D" class="tf-btn px-1.5 py-0.5 rounded text-slate-400 hover:text-white" title="Khung 1 Ngày (Daily Candle)">1D</button>
+            </div>
+
+            <!-- Mốc Thời Gian / Chọn Ngày Xem (Jump to Date) -->
+            <div class="flex items-center space-x-1 bg-[#131722] px-2 py-0.5 rounded border border-[#2a2e39] text-[10px] font-mono">
+              <i data-lucide="calendar" class="w-3 h-3 text-amber-400 flex-shrink-0"></i>
+              <select id="selectDateJump" onchange="jumpToDate(this.value)" class="bg-transparent text-amber-300 font-semibold focus:outline-none cursor-pointer">
+                <option value="latest" class="bg-[#1e222d] text-white">📅 Mới Nhất</option>
+              </select>
+            </div>
+
+            <!-- Số Lượng Nến Xem (Zoom Span) -->
+            <div class="flex items-center space-x-0.5 bg-[#131722] p-0.5 rounded border border-[#2a2e39] font-mono">
+              <button onclick="setCandleZoom(25)" id="zoom-25" class="zoom-btn px-1.5 py-0.5 rounded text-[10px] text-slate-300 hover:text-white" title="Xem 25 nến">25</button>
+              <button onclick="setCandleZoom(35)" id="zoom-35" class="zoom-btn active px-1.5 py-0.5 rounded text-[10px] bg-amber-500 text-slate-950 font-bold" title="Xem 35 nến chuẩn ICT">35 (ICT)</button>
+              <button onclick="setCandleZoom(60)" id="zoom-60" class="zoom-btn px-1.5 py-0.5 rounded text-[10px] text-slate-300 hover:text-white" title="Xem 60 nến">60</button>
+              <button onclick="setCandleZoom(120)" id="zoom-120" class="zoom-btn px-1.5 py-0.5 rounded text-[10px] text-slate-300 hover:text-white" title="Xem 120 nến">120</button>
+              <button onclick="setCandleZoom('all')" id="zoom-all" class="zoom-btn px-1.5 py-0.5 rounded text-[10px] text-slate-300 hover:text-white" title="Mở rộng toàn bộ lịch sử">TẤT CẢ</button>
+            </div>
+
+            <!-- Candle Style Switcher (Nến / Đường / Vùng) -->
+            <div class="flex items-center space-x-0.5 bg-[#131722] p-0.5 rounded border border-[#2a2e39]">
+              <button onclick="setChartType('candle')" id="btnTypeCandle" class="chart-type-btn active px-2 py-0.5 rounded text-[10px] bg-blue-600 text-white font-bold flex items-center gap-1" title="Nến Nhật (Candles)">
+                <i data-lucide="candlestick-chart" class="w-3 h-3"></i>
+                <span class="hidden sm:inline">Nến</span>
+              </button>
+              <button onclick="setChartType('line')" id="btnTypeLine" class="chart-type-btn px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white flex items-center gap-1" title="Đường (Line)">
+                <i data-lucide="trending-up" class="w-3 h-3"></i>
+                <span class="hidden sm:inline">Đường</span>
+              </button>
+              <button onclick="setChartType('area')" id="btnTypeArea" class="chart-type-btn px-2 py-0.5 rounded text-[10px] text-slate-400 hover:text-white flex items-center gap-1" title="Vùng (Area)">
+                <i data-lucide="activity" class="w-3 h-3"></i>
+                <span class="hidden sm:inline">Vùng</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Right Top Bar: Indicators, Auto ICT, Wheel Mode, Auto Fit, Fullscreen -->
+          <div class="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
+            
+            <!-- AUTO FIT BUTTON (CĂN CHỈNH VÔ KHUNG) -->
+            <button onclick="autoFitChart()" id="btnAutoFit" class="px-2 py-0.5 rounded bg-[#131722] border border-amber-500/40 text-amber-300 hover:text-white text-[10px] font-semibold flex items-center gap-1 transition" title="Tự động căn đều nến và hình vẽ vừa khít khung nhìn">
+              <i data-lucide="scan" class="w-3 h-3 text-amber-400"></i>
+              <span class="hidden md:inline">Căn Vô Khung</span>
+            </button>
+
+            <!-- AUTO ICT / SMC TOGGLE (Tự động vẽ FVG & BSL/SSL) -->
+            <button onclick="toggleAutoICT()" id="btnAutoICT" class="px-2 py-0.5 rounded bg-[#131722] border border-[#2a2e39] text-slate-300 hover:text-white text-[10px] font-semibold flex items-center gap-1 transition" title="Tự động nhận diện & vẽ vùng FVG, BSL, SSL, Quét thanh khoản (ICT / SMC)">
+              <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i>
+              <span id="autoIctBtnText">Tự Động ICT</span>
+            </button>
+
+            <!-- Indicators Toggle (fx) -->
+            <button onclick="toggleMALines()" id="btnToggleMA" class="px-2 py-0.5 rounded bg-[#131722] border border-[#2a2e39] text-slate-300 hover:text-white text-[10px] font-semibold flex items-center gap-1 transition">
+              <span class="text-amber-400 font-serif italic text-xs font-black">fx</span>
+              <span id="maBtnText" class="hidden sm:inline">Chỉ Báo MA</span>
+              <span id="maIndicatorDot" class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+            </button>
+
+            <!-- Scroll / Zoom Mode Toggle -->
+            <button onclick="toggleWheelMode()" id="btnWheelMode" class="px-2 py-0.5 rounded bg-[#131722] border border-cyan-500/40 text-cyan-400 text-[10px] font-semibold flex items-center gap-1 transition" title="Lăn chuột để Phóng to / Mở rộng góc nhìn (hoặc giữ Shift để cuộn ngang)">
+              <i data-lucide="zoom-in" class="w-3 h-3 text-cyan-400"></i>
+              <span id="wheelModeText" class="hidden md:inline">Lăn Chuột: Mở Rộng / Zoom</span>
+            </button>
+
+            <!-- Fullscreen Mode -->
+            <button onclick="toggleFullScreen()" class="p-1 rounded bg-[#131722] border border-[#2a2e39] text-slate-300 hover:text-white hover:border-amber-400 transition" title="Toàn Màn Hình TradingView">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- MAIN TRADINGVIEW WORKSPACE: LEFT DRAWING TOOLS + CHART CANVAS -->
+        <div id="chartContainerParent" class="relative flex w-full h-[320px] sm:h-[345px] lg:h-[370px] bg-[#131722] overflow-hidden">
+          
+          <!-- LEFT DRAWING TOOLBAR (THANH CÔNG CỤ VẼ CHUẨN TRADINGVIEW) -->
+          <div class="w-9 bg-[#1e222d] border-r border-[#2a2e39] flex flex-col items-center py-1.5 space-y-1 z-20 flex-shrink-0 select-none">
+            
+            <!-- Tool: Crosshair -->
+            <button onclick="setDrawingTool('crosshair')" id="tool-crosshair" class="tool-btn active w-7 h-7 rounded-md flex items-center justify-center text-amber-400 bg-[#2a2e39] hover:bg-[#363a45] transition" title="Con trỏ Crosshair (Xem nến / Cuộn lịch sử)">
+              <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+            </button>
+
+            <!-- Tool: Trendline (Đường xu hướng) -->
+            <button onclick="setDrawingTool('trendline')" id="tool-trendline" class="tool-btn w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] transition" title="Vẽ đường xu hướng (Trendline) - Phím tắt Alt+T">
+              <i data-lucide="slash" class="w-3.5 h-3.5 text-cyan-400"></i>
+            </button>
+
+            <!-- Tool: Horizontal Ray BSL/SSL -->
+            <button onclick="setDrawingTool('hline')" id="tool-hline" class="tool-btn w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] transition" title="Kẻ đường cản ngang BSL / SSL - Phím tắt Alt+H">
+              <i data-lucide="minus" class="w-3.5 h-3.5 text-amber-400"></i>
+            </button>
+
+            <!-- Tool: Box / Rectangle (FVG / Order Block) -->
+            <button onclick="setDrawingTool('rect')" id="tool-rect" class="tool-btn w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] transition" title="Vẽ khối hộp FVG / Order Block - Phím tắt Alt+B">
+              <i data-lucide="box" class="w-3.5 h-3.5 text-yellow-400"></i>
+            </button>
+
+            <!-- Tool: Risk / Reward Position (Khung R:R Vị Thế Long/Short) -->
+            <button onclick="setDrawingTool('rr')" id="tool-rr" class="tool-btn w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] transition" title="Khung đo Tỷ lệ Rủi ro/Lợi nhuận (R:R Tool)">
+              <i data-lucide="scale" class="w-3.5 h-3.5 text-emerald-400"></i>
+            </button>
+
+            <!-- Tool: Fibonacci Retracement ICT -->
+            <button onclick="setDrawingTool('fibo')" id="tool-fibo" class="tool-btn w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] transition" title="Thước Fibonacci ICT (OTE 0.618 - 0.705 - 0.79) - Phím tắt Alt+F">
+              <i data-lucide="align-justify" class="w-3.5 h-3.5 text-purple-400"></i>
+            </button>
+
+            <!-- Tool: Text Note (Ghi chú lên nến) -->
+            <button onclick="setDrawingTool('text')" id="tool-text" class="tool-btn w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] transition" title="Viết ghi chú trực tiếp lên nến">
+              <i data-lucide="type" class="w-3.5 h-3.5 text-pink-400"></i>
+            </button>
+
+            <div class="w-4 h-[1px] bg-[#2a2e39] my-0.5"></div>
+
+            <!-- Undo Last Drawing -->
+            <button onclick="undoLastDrawing()" class="w-7 h-7 rounded-md flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] transition" title="Hoàn tác nét vẽ vừa kẻ (Ctrl+Z)">
+              <i data-lucide="undo-2" class="w-3.5 h-3.5 text-blue-400"></i>
+            </button>
+
+            <!-- Clear All Drawings -->
+            <button onclick="clearAllDrawings()" class="w-7 h-7 rounded-md flex items-center justify-center text-red-400 hover:bg-red-500/20 hover:text-red-300 transition" title="Xóa tất cả nét vẽ trên biểu đồ">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+
+          </div>
+
+          <!-- CHART & DRAWING CANVAS VIEWPORT -->
+          <div id="chartViewport" class="relative flex-1 h-full overflow-hidden">
+            
+            <!-- FLOATING TRADINGVIEW OHLC LEGEND (GÓC TRÊN TRÁI) -->
+            <div id="tvLegend" class="absolute top-2 left-3 z-20 pointer-events-none flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] bg-[#131722] px-2.5 py-1 rounded border border-[#2a2e39]/60 shadow-lg">
+              <span class="text-white font-bold">VIETLOTT:KENO</span>
+              <span class="text-slate-400">10M</span>
+              <span id="legendOHLC" class="text-slate-300">
+                O: <strong id="lgOpen" class="text-white">---</strong>
+                H: <strong id="lgHigh" class="text-white">---</strong>
+                L: <strong id="lgLow" class="text-white">---</strong>
+                C: <strong id="lgClose" class="text-white">---</strong>
+                <span id="lgDelta" class="text-emerald-400 font-bold ml-1">---</span>
+              </span>
+              <span class="text-slate-500">|</span>
+              <span class="text-xs text-amber-300 font-semibold" id="lgDrawInfo">Kỳ #---</span>
+            </div>
+
+            <!-- FLOATING QUICK TRADINGVIEW DRAWING TOOLBAR (GÓC TRÊN PHẢI CHUẨN TRADINGVIEW) -->
+            <div id="quickDrawingBar" class="absolute top-2 right-3 z-20 flex items-center bg-[#1e222d] px-1.5 py-0.5 rounded-lg border border-[#2a2e39] shadow-2xl gap-0.5 sm:gap-1 font-mono text-[11px] select-none">
+              <!-- Con trỏ -->
+              <button onclick="setDrawingTool('crosshair')" id="qtool-crosshair" class="qtool-btn active px-2 py-1 rounded flex items-center gap-1 text-amber-400 bg-[#2a2e39] hover:bg-[#363a45] transition" title="Con trỏ Crosshair (Xem nến / Cuộn biểu đồ)">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline font-bold">Con Trỏ</span>
+              </button>
+
+              <div class="w-[1px] h-4 bg-[#2a2e39] mx-0.5"></div>
+
+              <!-- Xu Hướng (Trendline) -->
+              <button onclick="setDrawingTool('trendline')" id="qtool-trendline" class="qtool-btn px-2 py-1 rounded flex items-center gap-1 text-slate-300 hover:text-white hover:bg-[#2a2e39] transition" title="Kẻ đường xu hướng (Alt + T)">
+                <i data-lucide="slash" class="w-3.5 h-3.5 text-cyan-400"></i>
+                <span class="font-semibold text-cyan-300">Xu Hướng</span>
+              </button>
+
+              <!-- Đường Ngang (H-Line) -->
+              <button onclick="setDrawingTool('hline')" id="qtool-hline" class="qtool-btn px-2 py-1 rounded flex items-center gap-1 text-slate-300 hover:text-white hover:bg-[#2a2e39] transition" title="Kẻ đường cản ngang BSL / SSL (Alt + H)">
+                <i data-lucide="minus" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span class="font-semibold text-amber-300">Đường Ngang</span>
+              </button>
+
+              <!-- Hộp FVG -->
+              <button onclick="setDrawingTool('rect')" id="qtool-rect" class="qtool-btn px-2 py-1 rounded flex items-center gap-1 text-slate-300 hover:text-white hover:bg-[#2a2e39] transition" title="Vẽ khối hộp FVG / Order Block (Alt + B)">
+                <i data-lucide="box" class="w-3.5 h-3.5 text-yellow-400"></i>
+                <span class="font-semibold text-yellow-300">Hộp FVG</span>
+              </button>
+
+              <!-- Fibo ICT -->
+              <button onclick="setDrawingTool('fibo')" id="qtool-fibo" class="qtool-btn px-2 py-1 rounded flex items-center gap-1 text-slate-300 hover:text-white hover:bg-[#2a2e39] transition" title="Thước Fibonacci ICT (Alt + F)">
+                <i data-lucide="align-justify" class="w-3.5 h-3.5 text-purple-400"></i>
+                <span class="hidden sm:inline font-semibold text-purple-300">Fibo</span>
+              </button>
+
+              <!-- Đo R:R -->
+              <button onclick="setDrawingTool('rr')" id="qtool-rr" class="qtool-btn px-2 py-1 rounded flex items-center gap-1 text-slate-300 hover:text-white hover:bg-[#2a2e39] transition" title="Khung đo tỷ lệ Rủi ro/Lợi nhuận">
+                <i data-lucide="scale" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span class="hidden md:inline font-semibold text-emerald-300">Đo R:R</span>
+              </button>
+
+              <div class="w-[1px] h-4 bg-[#2a2e39] mx-0.5"></div>
+
+              <!-- Hoàn tác (Undo) -->
+              <button onclick="undoLastDrawing()" class="px-1.5 py-1 rounded flex items-center gap-1 text-slate-300 hover:text-white hover:bg-[#2a2e39] transition" title="Hoàn tác nét vẽ trước (Ctrl + Z)">
+                <i data-lucide="undo-2" class="w-3.5 h-3.5 text-blue-400"></i>
+                <span class="hidden sm:inline font-medium">Hoàn Tác</span>
+              </button>
+
+              <!-- Xóa hết (Clear All) -->
+              <button onclick="clearAllDrawings()" class="px-1.5 py-1 rounded flex items-center gap-1 text-red-400 hover:text-red-300 hover:bg-red-500/20 transition" title="Xóa tất cả nét vẽ trên biểu đồ">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+
+            <!-- Active Drawing Tool Notification Banner -->
+            <div id="activeToolBanner" class="hidden absolute top-11 right-3 z-20 px-2.5 py-1 rounded bg-amber-500/25 border border-amber-500/50 text-amber-300 text-[11px] font-mono flex items-center gap-1.5 shadow-2xl">
+              <i data-lucide="pencil" class="w-3.5 h-3.5 text-amber-400 animate-pulse"></i>
+              <span id="activeToolText">Đang kích hoạt công cụ vẽ...</span>
+              <button onclick="setDrawingTool('crosshair')" class="ml-1 text-slate-400 hover:text-white font-bold text-sm leading-none" title="Hủy vẽ">&times;</button>
+            </div>
+
+            <!-- Interactive HTML5 Drawing Canvas Overlay -->
+            <canvas id="drawingCanvas" class="absolute inset-0 z-10 w-full h-full pointer-events-none"></canvas>
+
+            <!-- TradingView Lightweight Charts Mount Target -->
+            <div id="tvChartContainer" class="w-full h-full"></div>
+
+            <!-- Floating Jump to Realtime Button -->
+            <button id="btnScrollToRealtime" onclick="scrollToRealtime()" class="hidden absolute bottom-3.5 right-3.5 z-30 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-2xl flex items-center space-x-1.5 border border-amber-300 transition transform hover:scale-105 active:scale-95">
+              <i data-lucide="arrow-right-to-line" class="w-4 h-4"></i>
+              <span>VỀ NẾN MỚI NHẤT</span>
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- TRADINGVIEW BOTTOM STATUS BAR -->
+        <div class="flex flex-wrap items-center justify-between bg-[#1e222d] px-3 py-1.5 border-t border-[#2a2e39] text-[11px] font-mono text-slate-400 select-none">
+          <div class="flex items-center space-x-2 sm:space-x-4">
+            <span class="flex items-center gap-1 text-emerald-400">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>VIETLOTT REAL-TIME</span>
+            </span>
+            <span>•</span>
+            <span>Pivot Cân Bằng: <strong class="text-amber-300">810.00 đ</strong></span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span>Múi giờ: <strong class="text-slate-200">UTC+7 (Hà Nội)</strong></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BẢNG PHÂN TÍCH THEO PHƯƠNG PHÁP ICT (INNER CIRCLE TRADER) -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        
+        <!-- BSL: Buy-Side Liquidity (Thanh khoản đỉnh) -->
+        <div class="p-4 rounded-xl bg-brand-card border border-brand-border space-y-2">
+          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>BSL (Buy-Side Liquidity)</span>
+            <span class="px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 font-mono font-bold text-[10px]">ĐỈNH CẢN</span>
+          </div>
+          <div class="flex items-baseline space-x-2">
+            <span id="ictBslValue" class="text-xl font-black text-red-400 font-mono">872 điểm</span>
+            <span class="text-xs text-slate-400 font-mono">Kỳ #0300504</span>
+          </div>
+          <div class="text-xs text-slate-300">
+            Vùng thanh khoản dải trên. Nếu nến chọc thủng đỉnh này rồi rút chân ➜ <strong>Quét thanh khoản (Liquidity Run)</strong>.
+          </div>
+        </div>
+
+        <!-- SSL: Sell-Side Liquidity (Thanh khoản đáy) -->
+        <div class="p-4 rounded-xl bg-brand-card border border-brand-border space-y-2">
+          <div class="text-xs text-slate-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>SSL (Sell-Side Liquidity)</span>
+            <span class="px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 font-mono font-bold text-[10px]">ĐÁY HỖ TRỢ</span>
+          </div>
+          <div class="flex items-baseline space-x-2">
+            <span id="ictSslValue" class="text-xl font-black text-cyan-400 font-mono">767 điểm</span>
+            <span class="text-xs text-slate-400 font-mono">Kỳ #0300502</span>
+          </div>
+          <div class="text-xs text-slate-300">
+            Vùng gom lệnh dải dưới. Đã quét râu đáy SSL ➜ <strong>Tín hiệu hồi phục đẩy dòng tiền về số LỚN</strong>.
+          </div>
+        </div>
+
+        <!-- ICT Bias Recommendation -->
+        <div class="p-4 rounded-xl bg-brand-card border border-amber-500/40 space-y-2">
+          <div class="text-xs text-amber-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+            <span>ICT Daily / Session Bias</span>
+            <i data-lucide="compass" class="w-4 h-4 text-amber-400"></i>
+          </div>
+          <div id="ictBiasBadge" class="text-base font-black text-emerald-400 font-mono">
+            BULLISH BIAS (Ưu tiên LỚN)
+          </div>
+          <div class="text-xs text-slate-300">
+            Nến vừa đóng rút râu dài ở đáy (Liquidity Sweep) và thân nến nằm trên mốc cân bằng 810 điểm.
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: DỰ BÁO KỲ TIẾP THEO (AI QUANT PREDICTOR - HERO) -->
+    <!-- ======================================================== -->
+    <section id="view-predict" class="tab-view hidden space-y-4">
+      
+      <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-brand-card via-slate-900/90 to-brand-card border border-brand-borderGold gold-glow p-4 sm:p-6 space-y-5">
+        
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-brand-border/60 pb-3">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
+            <h2 class="text-sm sm:text-base font-black text-white uppercase tracking-wider">
+              DỰ BÁO TỰ ĐỘNG CHO KỲ <span id="predNextDrawId" class="text-brand-gold font-mono">#0300515</span>
+            </h2>
+          </div>
+          <div class="flex items-center space-x-2 text-xs font-mono">
+            <span class="text-slate-400">Độ tin cậy:</span>
+            <span id="predConfidence" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40">78.6%</span>
+          </div>
+        </div>
+
+        <!-- 3 Golden Recommendations -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-xl bg-brand-bg/80 border border-amber-500/40 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-amber-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="crown" class="w-3.5 h-3.5"></i> Cặp Vàng Bậc 2
+              </span>
+              <span class="text-[11px] text-slate-400">1 ăn 9</span>
+            </div>
+            <div id="pairBallsDisplay" class="flex items-center space-x-2 py-1"></div>
+            <div class="flex items-center justify-between text-xs pt-1 border-t border-brand-border/40">
+              <span class="text-slate-400">Xác suất nổ:</span>
+              <span id="pairWinProb" class="text-emerald-400 font-black font-mono">16.6%</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-brand-bg/80 border border-purple-500/40 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-purple-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="gem" class="w-3.5 h-3.5"></i> Bộ 3 Vàng Bậc 3
+              </span>
+              <span class="text-[11px] text-slate-400">Trúng >= 2</span>
+            </div>
+            <div id="trioBallsDisplay" class="flex items-center space-x-1.5 py-1"></div>
+            <div class="flex items-center justify-between text-xs pt-1 border-t border-brand-border/40">
+              <span class="text-slate-400">Xác suất trúng:</span>
+              <span id="trioWinProb" class="text-emerald-400 font-black font-mono">31.1%</span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-brand-bg/80 border border-blue-500/40 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+              <span class="text-blue-400 font-bold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Dàn 7 Vé Steiner
+              </span>
+              <span class="text-[11px] text-slate-400">Bậc 3 (70k)</span>
+            </div>
+            <div id="steinerBallsDisplay" class="flex flex-wrap gap-1 py-1"></div>
+            <div class="flex items-center justify-between text-xs pt-1 border-t border-brand-border/40">
+              <span class="text-slate-400">Khả năng có >=3 số:</span>
+              <span class="text-emerald-400 font-black font-mono">28.8%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Parity & Range Gauges -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-brand-bg border border-brand-border space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-300">Dự Báo Chẵn / Lẻ:</span>
+              <span id="parityRecText" class="text-amber-400 font-bold font-mono">Thiên về CHẴN</span>
+            </div>
+            <div class="w-full h-3 rounded-full bg-slate-800 flex overflow-hidden">
+              <div id="barChan" class="h-full bg-blue-500 transition-all duration-700" style="width: 50%;"></div>
+              <div id="barHoa" class="h-full bg-slate-600 transition-all duration-700" style="width: 20%;"></div>
+              <div id="barLe" class="h-full bg-pink-500 transition-all duration-700" style="width: 30%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+              <span>Chẵn: <strong id="chanPercent" class="text-blue-400">48%</strong></span>
+              <span>Hòa: <strong class="text-slate-300">20%</strong></span>
+              <span>Lẻ: <strong id="lePercent" class="text-pink-400">32%</strong></span>
+            </div>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-brand-bg border border-brand-border space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-slate-300">Dự Báo Lớn / Nhỏ:</span>
+              <span id="rangeRecText" class="text-emerald-400 font-bold font-mono">Thiên về LỚN</span>
+            </div>
+            <div class="w-full h-3 rounded-full bg-slate-800 flex overflow-hidden">
+              <div id="barLon" class="h-full bg-emerald-500 transition-all duration-700" style="width: 52%;"></div>
+              <div id="barNho" class="h-full bg-cyan-500 transition-all duration-700" style="width: 48%;"></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+              <span>Lớn (41-80): <strong id="lonPercent" class="text-emerald-400">52%</strong></span>
+              <span>Nhỏ (01-40): <strong id="nhoPercent" class="text-cyan-400">48%</strong></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Top 10 Ball Probabilities -->
+      <div class="p-4 rounded-xl bg-brand-card border border-brand-border space-y-3">
+        <h3 class="text-xs font-bold text-white flex items-center gap-1.5 uppercase tracking-wider">
+          <i data-lucide="bar-chart-2" class="w-4 h-4 text-brand-gold"></i>
+          TOP 10 SỐ CÓ XÁC SUẤT RA CAO NHẤT KỲ TIẾP THEO (%)
+        </h3>
+        <div id="topProbList" class="grid grid-cols-2 sm:grid-cols-5 gap-2 font-mono text-xs"></div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: MA TRẬN 80 SỐ & % TẦN SUẤT -->
+    <!-- ======================================================== -->
+    <section id="view-matrix" class="tab-view hidden space-y-4">
+      <div class="p-4 rounded-xl bg-brand-card border border-brand-border space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 class="text-sm font-bold text-white">MA TRẬN 80 QUẢ BÓNG (% TẦN SUẤT & Z-SCORE)</h2>
+            <p class="text-[11px] text-slate-400">Nhấp vào bóng để chọn vào Pool tính toán dàn vé</p>
+          </div>
+          <div class="flex space-x-1.5 text-xs">
+            <button onclick="renderBallsGrid('all')" class="px-2.5 py-1 rounded bg-slate-800 text-slate-300">Tất Cả</button>
+            <button onclick="renderBallsGrid('hot')" class="px-2.5 py-1 rounded bg-red-500/20 text-red-400">Nóng 🔥</button>
+            <button onclick="renderBallsGrid('cold')" class="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-400">Lạnh ❄️</button>
+          </div>
+        </div>
+        <div id="ballsGrid" class="grid grid-cols-5 sm:grid-cols-10 gap-1.5 font-mono text-xs"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: XƯỞNG DÀN STEINER (> 70% THẮNG) -->
+    <!-- ======================================================== -->
+    <section id="view-wheel" class="tab-view hidden space-y-4">
+      <div class="p-4 rounded-xl bg-brand-card border border-brand-border space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-brand-border/60 pb-3">
+          <div>
+            <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+              <i data-lucide="ticket" class="w-4 h-4 text-amber-400"></i>
+              XƯỞNG TẠO DÀN VÉ TỐI ƯU TOÁN HỌC
+            </h2>
+            <p class="text-[11px] text-slate-400">Thuật toán phủ hình học Fano Plane Steiner $STS(7)$</p>
+          </div>
+          <button onclick="copyGeneratedTickets()" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1 active:scale-95 transition">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span id="copyBtnText">Copy Vé</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <label class="p-3 rounded-xl bg-brand-bg border border-amber-500/40 flex items-start gap-2.5 cursor-pointer">
+            <input type="radio" name="wheelStrategy" value="steiner_b3" checked onchange="updateWheelStrategy()" class="mt-0.5 text-amber-500">
+            <div>
+              <div class="font-bold text-amber-400">Dàn Steiner STS(7) — Bậc 3</div>
+              <div class="text-[11px] text-slate-400">7 vé (70.000đ). Phủ 100% diện tích cặp số. Trúng ít nhất 1 vé khi có 3 số lọt Pool.</div>
+            </div>
+          </label>
+          <label class="p-3 rounded-xl bg-brand-bg border border-brand-border flex items-start gap-2.5 cursor-pointer">
+            <input type="radio" name="wheelStrategy" value="full_b2" onchange="updateWheelStrategy()" class="mt-0.5 text-blue-500">
+            <div>
+              <div class="font-bold text-blue-400">Dàn Phủ Toàn Phần — Bậc 2 (> 77% Thắng)</div>
+              <div class="text-[11px] text-slate-400">Pool 10 số ➜ 45 vé (450k). Cứ 100 kỳ có 78 kỳ nổ vé trúng.</div>
+            </div>
+          </label>
+        </div>
+
+        <div id="ticketsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 font-mono text-xs max-h-72 overflow-y-auto pr-1"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: ĐỘ TRÙNG LẶP 45 TỶ CẶP SO SÁNH -->
+    <!-- ======================================================== -->
+    <section id="view-overlap" class="tab-view hidden space-y-4">
+      <div class="p-4 rounded-xl bg-brand-card border border-brand-border space-y-3">
+        <h2 class="text-sm font-bold text-white flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i>
+          PHÂN PHỐI ĐỘ TRÙNG LẶP VÀ TRẦN THỐNG KÊ (300.500 KỲ)
+        </h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="text-slate-400 border-b border-brand-border font-mono bg-brand-bg/50">
+              <tr>
+                <th class="p-2.5">Số trùng ($k$)</th>
+                <th class="p-2.5">% Lý thuyết</th>
+                <th class="p-2.5">% Thực tế</th>
+                <th class="p-2.5">Kỳ vọng 45 tỷ cặp</th>
+                <th class="p-2.5">Đánh giá</th>
+              </tr>
+            </thead>
+            <tbody id="overlapTableBody" class="divide-y divide-brand-border/40 font-mono"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 6: KHO DỮ LIỆU THỰC TẾ VIETLOTT -->
+    <!-- ======================================================== -->
+    <section id="view-history" class="tab-view hidden space-y-4">
+      <div class="p-4 rounded-xl bg-brand-card border border-brand-border space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-white">KHO KẾT QUẢ GẦN NHẤT TỪ VIETLOTT</h2>
+          <span id="historyCounter" class="text-xs text-slate-400 font-mono">480 kỳ</span>
+        </div>
+        <div class="overflow-x-auto max-h-96 overflow-y-auto">
+          <table class="w-full text-xs text-left">
+            <thead class="text-slate-400 border-b border-brand-border font-mono bg-brand-bg sticky top-0">
+              <tr>
+                <th class="p-2.5">Kỳ / Ngày</th>
+                <th class="p-2.5">20 Quả Bóng</th>
+                <th class="p-2.5">Chẵn/Lẻ</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody" class="divide-y divide-brand-border/40 font-mono"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MOBILE FIXED BOTTOM NAVIGATION BAR -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1e222d] border-t border-brand-border px-2 py-1.5 flex justify-around text-[10px] font-semibold text-slate-400">
+    <button onclick="switchTab('chart')" id="mtab-chart" class="mtab-btn active flex flex-col items-center text-amber-400">
+      <i data-lucide="candlestick-chart" class="w-4 h-4 mb-0.5"></i>
+      <span>Nến ICT</span>
+    </button>
+    <button onclick="switchTab('predict')" id="mtab-predict" class="mtab-btn flex flex-col items-center">
+      <i data-lucide="sparkles" class="w-4 h-4 mb-0.5"></i>
+      <span>Dự Báo</span>
+    </button>
+    <button onclick="switchTab('matrix')" id="mtab-matrix" class="mtab-btn flex flex-col items-center">
+      <i data-lucide="grid" class="w-4 h-4 mb-0.5"></i>
+      <span>80 Số</span>
+    </button>
+    <button onclick="switchTab('wheel')" id="mtab-wheel" class="mtab-btn flex flex-col items-center">
+      <i data-lucide="ticket" class="w-4 h-4 mb-0.5"></i>
+      <span>Dàn Vé</span>
+    </button>
+    <button onclick="switchTab('history')" id="mtab-history" class="mtab-btn flex flex-col items-center">
+      <i data-lucide="database" class="w-4 h-4 mb-0.5"></i>
+      <span>Kết Quả</span>
+    </button>
+  </nav>
+
+  <!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
+    let appData = null;
+    let selectedPool = [21, 56, 57, 35, 62, 1, 17];
+    let generatedTicketsList = [];
+    let tvChart = null;
+    let candleSeries = null;
+    let ma10Series = null;
+    let ma20Series = null;
+    let showMALines = false; // MẶC ĐỊNH TẮT ĐƯỜNG MA CHO PHƯƠNG PHÁP ICT
+    let currentZoomRange = 35; // MẶC ĐỊNH HIỂN THỊ 35 NẾN TO RÕ RÀNG
+    let currentTimeframe = '10M'; // 10M, 30M, 1H, 1D
+    let currentKnownDrawId = null;
+    let isTabActive = true;
+    let countdownIntervalId = null;
+    let autoPollingIntervalId = null;
+
+    // Chế độ siêu tiết kiệm Eco Mode khi chuyển sang game/app khác (0% CPU, 0% GPU)
+    function enterEcoMode() {
+      if (!isTabActive) return;
+      isTabActive = false;
+      document.body.classList.add('eco-mode');
+      document.title = '💤 [Đang nghỉ tiết kiệm 0% CPU] KENO QUANT PRO';
+      if (countdownIntervalId) {
+        clearInterval(countdownIntervalId);
+        countdownIntervalId = null;
+      }
+      if (autoPollingIntervalId) {
+        clearInterval(autoPollingIntervalId);
+        autoPollingIntervalId = null;
+      }
+    }
+
+    function exitEcoMode() {
+      if (isTabActive) return;
+      isTabActive = true;
+      document.body.classList.remove('eco-mode');
+      document.title = 'KENO QUANT PRO — Biểu Đồ Nến Chuẩn ICT & Vietlott Real-Time';
+      startLiveCountdown();
+      startAutoPolling();
+      loadStats(true); // Cập nhật kỳ mới tức thì
+    }
+
+    // Bắt sự kiện khi người dùng chuyển tab hoặc ẩn trình duyệt (Eco Mode siêu mượt)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        enterEcoMode();
+      } else {
+        exitEcoMode();
+      }
+    });
+
+    // Chọn Khung Thời Gian (Timeframe: 10M, 30M, 1H, 1D)
+    function setTimeframe(tf) {
+      currentTimeframe = tf;
+      document.querySelectorAll('.tf-btn').forEach(b => {
+        b.classList.remove('active', 'bg-blue-600', 'text-white', 'font-bold');
+        b.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById(`tf-${tf}`);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-blue-600', 'text-white', 'font-bold');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      const ticker = document.getElementById('tickerTimeframeText');
+      if (ticker) ticker.textContent = tf;
+
+      renderTradingViewChart();
+      autoFitChart();
+      showToast('⏱️ ĐÃ ĐỔI KHUNG THỜI GIAN: ' + tf, `Biểu đồ đã gộp nến theo mốc ${tf} chuẩn TradingView.`);
+    }
+
+    function getAggregatedCandles(rawCandles, tf) {
+      if (!rawCandles || !rawCandles.length) return [];
+      if (tf === '10M' || !tf) return rawCandles;
+
+      const group = tf === '30M' ? 3 : (tf === '1H' ? 6 : (tf === '1D' ? 96 : 1));
+      const res = [];
+      for (let i = 0; i < rawCandles.length; i += group) {
+        const chunk = rawCandles.slice(i, i + group);
+        if (chunk.length === 0) continue;
+        const open = chunk[0].open;
+        const close = chunk[chunk.length - 1].close;
+        let high = -Infinity;
+        let low = Infinity;
+        let sum = 0;
+        chunk.forEach(c => {
+          if (c.high > high) high = c.high;
+          if (c.low < low) low = c.low;
+          sum += (c.sum || c.close);
+        });
+        res.push({
+          time: chunk[0].time,
+          drawId: chunk[chunk.length - 1].drawId,
+          date: chunk[chunk.length - 1].date,
+          open,
+          high,
+          low,
+          close,
+          sum: Math.round(sum / chunk.length),
+          volume: chunk.length * 10
+        });
+      }
+      return res;
+    }
+
+    function getActiveCandles() {
+      if (!appData || !appData.tradingView || !appData.tradingView.candles) return [];
+      return getAggregatedCandles(appData.tradingView.candles, currentTimeframe);
+    }
+
+    function calculateMA(candles, period) {
+      const result = [];
+      for (let i = 0; i < candles.length; i++) {
+        if (i < period - 1) continue;
+        let sum = 0;
+        for (let j = 0; j < period; j++) {
+          sum += candles[i - j].close;
+        }
+        result.push({ time: candles[i].time, value: Math.round(sum / period) });
+      }
+      return result;
+    }
+
+    function updateDateJumpOptions() {
+      const select = document.getElementById('selectDateJump');
+      if (!select || !appData || !appData.draws) return;
+      const currentVal = select.value;
+      const dates = [];
+      appData.draws.forEach(d => {
+        if (d.date && !dates.includes(d.date)) dates.push(d.date);
+      });
+      let html = `<option value="latest" class="bg-[#1e222d] text-white">📅 Mới Nhất</option>`;
+      dates.forEach((dateStr, idx) => {
+        const label = idx === 0 ? `Hôm nay (${dateStr})` : (idx === 1 ? `Hôm qua (${dateStr})` : `Ngày ${dateStr}`);
+        html += `<option value="${dateStr}" class="bg-[#1e222d] text-white">${label}</option>`;
+      });
+      html += `<option value="earliest" class="bg-[#1e222d] text-white">Kỳ Đầu Tiên</option>`;
+      select.innerHTML = html;
+      if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
+        select.value = currentVal;
+      }
+    }
+
+    function jumpToDate(val) {
+      if (!tvChart || !appData || !appData.tradingView) return;
+      const candles = getActiveCandles();
+      if (!candles.length) return;
+      if (val === 'latest') {
+        autoFitChart();
+        return;
+      }
+      if (val === 'earliest') {
+        tvChart.timeScale().setVisibleLogicalRange({
+          from: -1,
+          to: 35
+        });
+        showToast('📅 ĐÃ CHUYỂN MỐC THỜI GIAN', 'Đang xem từ kỳ quay đầu tiên.');
+        return;
+      }
+      const idx = candles.findIndex(c => c.date === val);
+      if (idx !== -1) {
+        tvChart.timeScale().setVisibleLogicalRange({
+          from: Math.max(0, idx - 2),
+          to: Math.min(candles.length + 3, idx + 35)
+        });
+        showToast('📅 ĐÃ CHUYỂN MỐC THỜI GIAN', `Đang xem các kỳ quay ngày ${val}.`);
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+      const target = document.getElementById(`view-${tabId}`);
+      if (target) target.classList.remove('hidden');
+
+      document.querySelectorAll('.dtab-btn').forEach(btn => {
+        btn.classList.remove('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/30');
+        btn.classList.add('text-slate-400');
+      });
+      const dActive = document.getElementById(`dtab-${tabId}`);
+      if (dActive) {
+        dActive.classList.add('text-amber-400', 'bg-amber-500/10', 'border', 'border-amber-500/30');
+        dActive.classList.remove('text-slate-400');
+      }
+
+      document.querySelectorAll('.mtab-btn').forEach(btn => {
+        btn.classList.remove('text-amber-400');
+        btn.classList.add('text-slate-400');
+      });
+      const mActive = document.getElementById(`mtab-${tabId}`);
+      if (mActive) {
+        mActive.classList.add('text-amber-400');
+        mActive.classList.remove('text-slate-400');
+      }
+
+      if (tabId === 'chart' && tvChart) {
+        setTimeout(() => {
+          const container = document.getElementById('tvChartContainer');
+          if (container) {
+            tvChart.resize(container.clientWidth, container.clientHeight);
+            applyCandleZoom();
+          }
+        }, 50);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    let chartInitialized = false;
+    let userIsScrolledBack = false;
+    let mouseWheelMode = 'zoom'; // Mặc định chuẩn TradingView: 'zoom' (Lăn chuột mở rộng / phóng to nến)
+
+    let toastTimer = null;
+    function hideToast() {
+      const toast = document.getElementById('toastNotification');
+      if (toast) {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+      }
+    }
+
+    function showToast(title, msg) {
+      const toast = document.getElementById('toastNotification');
+      if (!toast) return;
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMsg').textContent = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        hideToast();
+      }, 2000);
+    }
+
+    async function loadStats(isSilent = false) {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        
+        const isFirstLoad = !appData;
+        const hasNewDraw = currentKnownDrawId && data.latestDraw && data.latestDraw.drawId !== currentKnownDrawId;
+        
+        if (hasNewDraw) {
+          showToast('⚡ PHÁT HIỆN KỲ QUAY MỚI!', `Kỳ #${data.latestDraw.drawId} đã nổ! Nến TradingView đã vẽ thêm.`);
+        }
+        
+        if (data.latestDraw) {
+          currentKnownDrawId = data.latestDraw.drawId;
+        }
+
+        appData = data;
+
+        // CHỈ RENDER LẠI TOÀN BỘ KHI MỚI MỞ TRANG HOẶC KHI CÓ KỲ MỚI NỔ!
+        // Tuyệt đối không auto-reset biểu đồ nến mỗi 4 giây khiến nến bị tự thu nhỏ lại
+        if (isFirstLoad || hasNewDraw) {
+          renderAll();
+        }
+      } catch (e) {
+        if (!isSilent) console.error("Load failed:", e);
+      }
+    }
+
+    function startLiveCountdown() {
+      if (countdownIntervalId) clearInterval(countdownIntervalId);
+      countdownIntervalId = setInterval(() => {
+        if (!isTabActive) return; // Tiết kiệm CPU tuyệt đối khi chuyển sang app khác
+        const now = new Date();
+        const min = now.getMinutes();
+        const sec = now.getSeconds();
+        const remainingSeconds = ((9 - (min % 10)) * 60) + (60 - sec);
+        const m = Math.floor(remainingSeconds / 60);
+        const s = remainingSeconds % 60;
+        const timerEl = document.getElementById('countdownTimer');
+        if (timerEl) {
+          timerEl.textContent = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+        }
+        if (remainingSeconds <= 3) {
+          loadStats(true);
+        }
+      }, 1000);
+    }
+
+    function startAutoPolling() {
+      if (autoPollingIntervalId) clearInterval(autoPollingIntervalId);
+      // Tự động kiểm tra nhẹ nhàng mỗi 15 giây khi tab đang bật
+      autoPollingIntervalId = setInterval(() => {
+        if (isTabActive) {
+          loadStats(true);
+        }
+      }, 15000);
+    }
+
+    function renderAll() {
+      if (!appData) return;
+
+      if (appData.latestDraw) {
+        document.getElementById('headerSyncText').textContent = `Kỳ vừa xổ: #${appData.latestDraw.drawId} (${appData.latestDraw.date})`;
+      }
+
+      updateDateJumpOptions();
+      renderTradingViewChart();
+      renderPredictionHero();
+      renderBallsGrid('all');
+      renderOverlapTable();
+      renderHistoryTable();
+      generateTicketsFromPool();
+    }
+
+    // TRADINGVIEW PRO ENGINE & DRAWING TOOLS
+    let lineSeries = null;
+    let areaSeries = null;
+    let currentChartType = 'candle';
+    let activeDrawingTool = 'crosshair';
+    let drawings = [];
+    let isDrawing = false;
+    let drawStartX = 0, drawStartY = 0;
+    let canvasInitialized = false;
+
+    // TRADINGVIEW ICT CANDLESTICK CHART
+    function renderTradingViewChart() {
+      if (!appData || !appData.tradingView) return;
+      const tvData = appData.tradingView;
+
+      const container = document.getElementById('tvChartContainer');
+      if (!container) return;
+
+      if (!tvChart) {
+        container.innerHTML = '';
+        tvChart = LightweightCharts.createChart(container, {
+          width: container.clientWidth,
+          height: container.clientHeight,
+          layout: {
+            background: { color: '#131722' },
+            textColor: '#94a3b8',
+            fontSize: 11,
+            fontFamily: 'JetBrains Mono, monospace'
+          },
+          grid: {
+            vertLines: { color: '#1e222d' },
+            horzLines: { color: '#1e222d' }
+          },
+          crosshair: {
+            mode: LightweightCharts.CrosshairMode.Normal,
+            vertLine: { color: '#f59e0b', width: 1, style: 3 },
+            horzLine: { color: '#f59e0b', width: 1, style: 3 }
+          },
+          rightPriceScale: {
+            borderColor: '#2a2e39',
+            autoScale: true
+          },
+          localization: {
+            locale: 'vi-VN',
+            dateFormat: 'dd/MM/yyyy',
+            timeFormatter: (time) => {
+              const d = new Date(time * 1000);
+              const hh = String(d.getHours()).padStart(2, '0');
+              const mm = String(d.getMinutes()).padStart(2, '0');
+              return `${hh}:${mm}`;
+            }
+          },
+          timeScale: {
+            borderColor: '#2a2e39',
+            timeVisible: true,        // HIỆN GIỜ VÀ PHÚT TRÊN TRỤC THỜI GIAN
+            secondsVisible: false,    // Không cần giây vì Keno quay 10 phút/kỳ
+            barSpacing: 18,           // Thân nến to rõ ràng chuẩn ICT
+            minBarSpacing: 1.5,       // CHO PHÉP MỞ RỘNG (ZOOM OUT) HIỂN THỊ HÀNG TRĂM NẾN MƯỢT MÀ
+            maxBarSpacing: 80,        // Zoom phóng to tối đa
+            rightOffset: 6,           // Khoảng đệm 6 nến bên phải
+            lockVisibleTimeRangeOnResize: true,
+            tickMarkFormatter: (time, tickMarkType, locale) => {
+              const d = new Date(time * 1000);
+              const hh = String(d.getHours()).padStart(2, '0');
+              const mm = String(d.getMinutes()).padStart(2, '0');
+              const dd = String(d.getDate()).padStart(2, '0');
+              const mo = String(d.getMonth() + 1).padStart(2, '0');
+              if (tickMarkType <= 2) {
+                return `${dd}/${mo}`;
+              }
+              return `${hh}:${mm}`;
+            }
+          },
+          handleScroll: {
+            mouseWheel: false,        // TẮT cuộn mặc định của chart để dùng wheel handler chặn cuộn trang web
+            pressedMouseMove: true,   // Cho phép kéo trượt trái/phải bằng chuột trái chuẩn TradingView
+            horzTouchDrag: true,
+            vertTouchDrag: true
+          },
+          handleScale: {
+            axisPressedMouseMove: true, // Kéo trục giá hoặc trục thời gian để scale
+            axisDoubleClickReset: true,
+            mouseWheel: false,
+            pinch: true               // Cho phép chụm 2 ngón tay trên điện thoại
+          }
+        });
+
+        // Chặn tuyệt đối việc cuộn cả trang web khi lăn chuột trên biểu đồ
+        const chartViewport = document.getElementById('chartViewport');
+        if (chartViewport && !chartViewport._wheelBound) {
+          chartViewport._wheelBound = true;
+
+          // Double click biểu đồ để tự động căn đều (Auto Fit)
+          chartViewport.addEventListener('dblclick', (e) => {
+            e.preventDefault();
+            autoFitChart();
+          });
+
+          chartViewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (!tvChart) return;
+            const timeScale = tvChart.timeScale();
+            const range = timeScale.getVisibleLogicalRange();
+            if (!range) return;
+
+            const totalCandles = (appData && appData.tradingView && appData.tradingView.candles) ? appData.tradingView.candles.length : 100;
+
+            // Nếu giữ Shift hoặc ở chế độ cuộn: Lăn chuột để trượt thời gian trái / phải
+            if (e.shiftKey || mouseWheelMode === 'scroll') {
+              const step = (e.deltaY > 0 ? 3 : -3);
+              let nextTo = range.to + step;
+              let nextFrom = range.from + step;
+              if (nextTo > totalCandles + 4) {
+                const diff = nextTo - (totalCandles + 4);
+                nextTo = totalCandles + 4;
+                nextFrom -= diff;
+              }
+              timeScale.setVisibleLogicalRange({
+                from: nextFrom,
+                to: nextTo
+              });
+              return;
+            }
+
+            // CHUẨN TRADINGVIEW: LĂN CHUỘT ĐỂ MỞ RỘNG GÓC NHÌN HOẶC PHÓNG TO NẾN (Cursor-Anchored Zoom)
+            const rect = chartViewport.getBoundingClientRect();
+            const cursorX = e.clientX - rect.left;
+            // Tỷ lệ vị trí con trỏ chuột theo chiều ngang (0.0 = sát mép trái, 1.0 = sát mép phải)
+            const ratio = Math.max(0.02, Math.min(0.98, cursorX / rect.width));
+
+            const currentSpan = range.to - range.from;
+            // e.deltaY > 0 (lăn xuống): MỞ RỘNG GÓC NHÌN (thấy nhiều nến hơn, nến nhỏ lại)
+            // e.deltaY < 0 (lăn lên): PHÓNG TO NẾN (thấy chi tiết ít nến hơn, nến to lên)
+            const factor = e.deltaY > 0 ? 1.18 : 0.82;
+            const newSpan = Math.max(8, Math.min(totalCandles + 10, currentSpan * factor));
+
+            // Neo tâm mở rộng / thu phóng chính xác tại vị trí con trỏ chuột
+            const anchor = range.from + currentSpan * ratio;
+            let newFrom = anchor - newSpan * ratio;
+            let newTo = anchor + newSpan * (1 - ratio);
+
+            // KHÓA MẶT PHẢI (Right Bound Clamp):
+            // Tuyệt đối không cho dải nến bị đẩy lùi sang trái để lộ khoảng đen mênh mông bên phải!
+            const maxAllowedTo = totalCandles + 4;
+            if (newTo > maxAllowedTo) {
+              const overflow = newTo - maxAllowedTo;
+              newTo = maxAllowedTo;
+              newFrom = Math.max(0, newFrom - overflow);
+            }
+
+            timeScale.setVisibleLogicalRange({
+              from: newFrom,
+              to: newTo
+            });
+          }, { passive: false });
+        }
+
+        // 1. Candlestick series (Thân nến xanh/đỏ chuẩn TradingView)
+        candleSeries = tvChart.addCandlestickSeries({
+          upColor: '#089981',
+          downColor: '#f23645',
+          borderVisible: false,
+          wickUpColor: '#089981',
+          wickDownColor: '#f23645'
+        });
+
+        // 2. Line series (Biểu đồ đường)
+        lineSeries = tvChart.addLineSeries({
+          color: '#2962ff',
+          lineWidth: 2,
+          visible: false,
+          lastValueVisible: false,
+          priceLineVisible: false
+        });
+
+        // 3. Area series (Biểu đồ vùng)
+        areaSeries = tvChart.addAreaSeries({
+          topColor: 'rgba(41, 98, 255, 0.4)',
+          bottomColor: 'rgba(41, 98, 255, 0.0)',
+          lineColor: '#2962ff',
+          lineWidth: 2,
+          visible: false,
+          lastValueVisible: false,
+          priceLineVisible: false
+        });
+
+        // 4. MA Series (Chỉ báo MA10 & MA20)
+        ma10Series = tvChart.addLineSeries({
+          color: '#f59e0b',
+          lineWidth: 1.5,
+          visible: showMALines,
+          lastValueVisible: false,
+          priceLineVisible: false
+        });
+
+        ma20Series = tvChart.addLineSeries({
+          color: '#8b5cf6',
+          lineWidth: 1.5,
+          visible: showMALines,
+          lastValueVisible: false,
+          priceLineVisible: false
+        });
+
+        // Lắng nghe di chuyển của người dùng để hiện nút "Về Nến Mới Nhất" & Vẽ lại nét vẽ
+        tvChart.timeScale().subscribeVisibleLogicalRangeChange(range => {
+          redrawCanvas();
+          if (!range || !appData || !appData.tradingView) return;
+          const total = appData.tradingView.candles.length;
+          userIsScrolledBack = (range.to < total - 2);
+          const btn = document.getElementById('btnScrollToRealtime');
+          if (btn) {
+            if (userIsScrolledBack) {
+              if (btn.classList.contains('hidden')) {
+                btn.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+              }
+            } else {
+              btn.classList.add('hidden');
+            }
+          }
+        });
+
+        // TradingView Crosshair Move: Cập nhật Legend OHLC góc trên trái
+        tvChart.subscribeCrosshairMove(param => {
+          if (!param || !param.time || !param.seriesData || !candleSeries) {
+            if (appData && appData.tradingView && appData.tradingView.candles.length) {
+              const last = appData.tradingView.candles[appData.tradingView.candles.length - 1];
+              updateLegend(last);
+            }
+            return;
+          }
+          const data = param.seriesData.get(candleSeries);
+          if (data) {
+            updateLegend(data);
+          }
+        });
+
+        window.addEventListener('resize', () => {
+          if (tvChart && container) {
+            tvChart.resize(container.clientWidth, container.clientHeight);
+            const canvas = document.getElementById('drawingCanvas');
+            if (canvas) {
+              canvas.width = container.clientWidth;
+              canvas.height = container.clientHeight;
+            }
+            redrawCanvas();
+          }
+        });
+
+        // Khởi động lớp vẽ Canvas tương tác
+        if (!canvasInitialized) {
+          initDrawingCanvas();
+          canvasInitialized = true;
+        }
+      }
+
+      // Cập nhật dữ liệu vào các series theo Khung Thời Gian hiện tại
+      const activeCandles = getActiveCandles();
+      candleSeries.setData(activeCandles);
+      const lineData = activeCandles.map(c => ({ time: c.time, value: c.close }));
+      lineSeries.setData(lineData);
+      areaSeries.setData(lineData);
+
+      const ma10Data = calculateMA(activeCandles, 10);
+      const ma20Data = calculateMA(activeCandles, 20);
+      if (ma10Series) ma10Series.setData(ma10Data);
+      if (ma20Series) ma20Series.setData(ma20Data);
+
+      // Cập nhật Legend với cây nến mới nhất
+      if (activeCandles && activeCandles.length > 0) {
+        updateLegend(activeCandles[activeCandles.length - 1]);
+      }
+
+      // Chỉ set vị trí Zoom ở LẦN ĐẦU TIÊN tải trang!
+      if (!chartInitialized) {
+        applyCandleZoom();
+        chartInitialized = true;
+      } else if (!userIsScrolledBack) {
+        scrollToRealtime();
+      }
+
+      redrawCanvas();
+      updateICTAnalysis();
+    }
+
+    function updateLegend(candle) {
+      if (!candle) return;
+      const elOpen = document.getElementById('lgOpen');
+      const elHigh = document.getElementById('lgHigh');
+      const elLow = document.getElementById('lgLow');
+      const elClose = document.getElementById('lgClose');
+      const elDelta = document.getElementById('lgDelta');
+      const elInfo = document.getElementById('lgDrawInfo');
+
+      if (elOpen) elOpen.textContent = candle.open;
+      if (elHigh) elHigh.textContent = candle.high;
+      if (elLow) elLow.textContent = candle.low;
+      if (elClose) elClose.textContent = candle.close;
+
+      const delta = candle.close - candle.open;
+      if (elDelta) {
+        elDelta.textContent = (delta >= 0 ? '+' : '') + delta + ' đ';
+        elDelta.className = delta >= 0 ? 'text-emerald-400 font-bold ml-1' : 'text-red-400 font-bold ml-1';
+      }
+      if (elInfo) {
+        let timeStr = '';
+        if (candle.time) {
+          const d = new Date(candle.time * 1000);
+          const hh = String(d.getHours()).padStart(2, '0');
+          const mm = String(d.getMinutes()).padStart(2, '0');
+          const dd = String(d.getDate()).padStart(2, '0');
+          const mo = String(d.getMonth() + 1).padStart(2, '0');
+          timeStr = ` • ${hh}:${mm} (${dd}/${mo})`;
+        }
+        const drawNo = candle.drawId ? (candle.drawId.startsWith('#') ? candle.drawId : '#' + candle.drawId) : '';
+        elInfo.textContent = `Kỳ ${drawNo}${timeStr}`;
+      }
+    }
+
+    // Đổi kiểu biểu đồ: Nến / Đường / Vùng
+    function setChartType(type) {
+      currentChartType = type;
+      document.querySelectorAll('.chart-type-btn').forEach(b => {
+        b.classList.remove('active', 'bg-blue-600', 'text-white', 'font-bold');
+        b.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById(`btnType${type.charAt(0).toUpperCase() + type.slice(1)}`);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-blue-600', 'text-white', 'font-bold');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      if (candleSeries) candleSeries.applyOptions({ visible: type === 'candle' });
+      if (lineSeries) lineSeries.applyOptions({ visible: type === 'line' });
+      if (areaSeries) areaSeries.applyOptions({ visible: type === 'area' });
+    }
+
+    // Toàn màn hình Workspace
+    function toggleFullScreen() {
+      const elem = document.getElementById('tradingviewWorkspace');
+      if (!elem) return;
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => console.log(err));
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    // ==========================================
+    // CÔNG CỤ VẼ TRADINGVIEW & TỰ ĐỘNG ICT (SMC)
+    // ==========================================
+    let autoICTEnabled = false;
+
+    function toggleAutoICT() {
+      autoICTEnabled = !autoICTEnabled;
+      const btn = document.getElementById('btnAutoICT');
+      const txt = document.getElementById('autoIctBtnText');
+      if (autoICTEnabled) {
+        btn.classList.add('bg-emerald-500/25', 'border-emerald-400', 'text-emerald-300', 'shadow-lg');
+        btn.classList.remove('bg-[#131722]', 'text-slate-300');
+        txt.textContent = 'Đang Bật ICT';
+        showToast('⚡ CHẾ ĐỘ ICT / SMC ĐÃ BẬT', 'Tự động quét & vẽ FVG, BSL, SSL, Liquidity Sweeps lên biểu đồ.');
+      } else {
+        btn.classList.remove('bg-emerald-500/25', 'border-emerald-400', 'text-emerald-300', 'shadow-lg');
+        btn.classList.add('bg-[#131722]', 'text-slate-300');
+        txt.textContent = 'Tự Động ICT';
+      }
+      redrawCanvas();
+    }
+
+    let drawingState = {
+      step: 0, // 0 = chờ điểm 1, 1 = đã chọn điểm 1
+      p1: null,
+      mousePos: null,
+      isMouseDown: false,
+      pressPos: null
+    };
+
+    function setDrawingTool(tool) {
+      activeDrawingTool = tool;
+      drawingState.step = 0;
+      drawingState.p1 = null;
+      drawingState.isMouseDown = false;
+
+      const canvas = document.getElementById('drawingCanvas');
+      const banner = document.getElementById('activeToolBanner');
+      const bannerText = document.getElementById('activeToolText');
+
+      // 1. Cập nhật Sidebar bên trái
+      document.querySelectorAll('.tool-btn').forEach(b => {
+        b.classList.remove('active', 'text-amber-400', 'bg-[#2a2e39]');
+        b.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById(`tool-${tool}`);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'text-amber-400', 'bg-[#2a2e39]');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      // 2. Cập nhật Floating Quick Toolbar trên đỉnh biểu đồ
+      document.querySelectorAll('.qtool-btn').forEach(b => {
+        b.classList.remove('active', 'bg-amber-500', 'text-slate-950', 'font-bold', 'shadow-lg', 'bg-[#2a2e39]', 'text-amber-400');
+        b.classList.add('text-slate-300');
+      });
+      const qActiveBtn = document.getElementById(`qtool-${tool}`);
+      if (qActiveBtn) {
+        if (tool === 'crosshair') {
+          qActiveBtn.classList.add('active', 'text-amber-400', 'bg-[#2a2e39]');
+        } else {
+          qActiveBtn.classList.add('active', 'bg-amber-500', 'text-slate-950', 'font-bold', 'shadow-lg');
+          qActiveBtn.classList.remove('text-slate-300');
+        }
+      }
+
+      if (tool === 'crosshair') {
+        if (canvas) {
+          canvas.style.pointerEvents = 'none';
+          canvas.style.cursor = 'default';
+        }
+        if (banner) banner.classList.add('hidden');
+      } else {
+        if (canvas) {
+          canvas.style.pointerEvents = 'auto';
+          canvas.style.cursor = 'crosshair';
+        }
+        if (banner) {
+          banner.classList.remove('hidden');
+          const names = {
+            trendline: '✏️ Đường Xu Hướng: Bấm Điểm 1 trên nến ➜ Rê chuột thấy đường dẫn sáng ➜ Bấm Điểm 2 để chốt',
+            hline: '📏 Đường Ngang BSL/SSL: Rê chuột thấy đường căn giá theo thời gian thực ➜ Bấm 1 lần để chốt',
+            rect: '📦 Khối Hộp FVG / Order Block: Bấm Góc 1 ➜ Rê chuột thấy hộp mở rộng ➜ Bấm Góc 2 để chốt',
+            rr: '⚖️ Khung Vị Thế R:R (Long/Short): Nhấp chuột vào nến để chốt vị thế 1:2',
+            fibo: '📐 Thước Fibonacci ICT: Bấm Đáy ➜ Rê chuột thấy các mốc OTE ➜ Bấm Đỉnh',
+            text: '📝 Ghi Chú Nến: Nhấp chuột vào cây nến để nhập chữ'
+          };
+          bannerText.textContent = names[tool] || 'Đang chọn công cụ vẽ...';
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+      redrawCanvas();
+    }
+
+    // Hoàn tác nét vẽ vừa thực hiện (Ctrl + Z)
+    function undoLastDrawing() {
+      if (drawings.length > 0) {
+        drawings.pop();
+        drawingState.step = 0;
+        drawingState.p1 = null;
+        redrawCanvas();
+      }
+    }
+
+    function clearAllDrawings() {
+      drawings = [];
+      drawingState.step = 0;
+      drawingState.p1 = null;
+      redrawCanvas();
+      setDrawingTool('crosshair');
+    }
+
+    function initDrawingCanvas() {
+      const canvas = document.getElementById('drawingCanvas');
+      const container = document.getElementById('chartViewport');
+      if (!canvas || !container) return;
+
+      function resizeCanvas() {
+        const rect = container.getBoundingClientRect();
+        const w = rect.width || container.clientWidth || 800;
+        const h = rect.height || container.clientHeight || 350;
+        if (w > 0 && h > 0) {
+          canvas.width = w;
+          canvas.height = h;
+          canvas.style.width = w + 'px';
+          canvas.style.height = h + 'px';
+        }
+        redrawCanvas();
+      }
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => resizeCanvas());
+        ro.observe(container);
+      }
+
+      function getCanvasPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      // Rê chuột: Luôn cập nhật vị trí và vẽ Preview thời gian thực chuẩn TradingView
+      canvas.addEventListener('mousemove', (e) => {
+        if (activeDrawingTool === 'crosshair' || !candleSeries) return;
+        drawingState.mousePos = getCanvasPos(e);
+        redrawCanvas();
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        drawingState.mousePos = null;
+        redrawCanvas();
+      });
+
+      // Nhấn chuột (chuẩn bị điểm hoặc bắt đầu kéo)
+      canvas.addEventListener('mousedown', (e) => {
+        if (e.button !== 0 || activeDrawingTool === 'crosshair' || !candleSeries) return;
+        const pos = getCanvasPos(e);
+        drawingState.isMouseDown = true;
+        drawingState.pressPos = pos;
+      });
+
+      // Nhả chuột: Hoàn thiện vẽ bằng cả 2 cách (Bấm 2 điểm HOẶC Kéo thả)
+      canvas.addEventListener('mouseup', (e) => {
+        if (e.button !== 0 || activeDrawingTool === 'crosshair' || !candleSeries) return;
+        if (!drawingState.isMouseDown) return;
+        drawingState.isMouseDown = false;
+
+        const pos = getCanvasPos(e);
+        const pressPos = drawingState.pressPos || pos;
+        const dist = Math.hypot(pos.x - pressPos.x, pos.y - pressPos.y);
+        const timeScale = tvChart.timeScale();
+
+        // CÁCH 1: Người dùng nhấn giữ và kéo thả (> 15px)
+        if (dist > 15) {
+          finishTwoPointDrawing(pressPos, pos);
+          return;
+        }
+
+        // CÁCH 2: Người dùng nhấp chuột từng điểm (TradingView 2-Click Standard)
+        // A. Các công cụ 1-Click (Đường ngang, R:R, Text)
+        if (activeDrawingTool === 'hline') {
+          const price = Math.round(candleSeries.coordinateToPrice(pos.y));
+          if (price) {
+            drawings.push({
+              type: 'hline',
+              price: price,
+              color: price >= 810 ? '#ef4444' : '#10b981',
+              label: (price >= 810 ? 'BSL ' : 'SSL ') + price + ' đ'
+            });
+            redrawCanvas();
+            setDrawingTool('crosshair');
+          }
+          return;
+        }
+
+        if (activeDrawingTool === 'rr') {
+          const entryPrice = Math.round(candleSeries.coordinateToPrice(pos.y));
+          if (entryPrice) {
+            const isLong = entryPrice < 810;
+            drawings.push({
+              type: 'rr',
+              logical: timeScale.coordinateToLogical(pos.x),
+              time: timeScale.coordinateToTime(pos.x),
+              x: pos.x,
+              entryPrice,
+              stopLoss: isLong ? entryPrice - 15 : entryPrice + 15,
+              target: isLong ? entryPrice + 30 : entryPrice - 30,
+              isLong,
+              rrRatio: '1:2.0'
+            });
+            redrawCanvas();
+            setDrawingTool('crosshair');
+          }
+          return;
+        }
+
+        if (activeDrawingTool === 'text') {
+          const price = Math.round(candleSeries.coordinateToPrice(pos.y));
+          const text = prompt('Nhập nội dung ghi chú (ví dụ: Chờ Săn BSL, Order Block, Vùng Mua):', 'Khu vực chú ý');
+          if (text) {
+            drawings.push({
+              type: 'text',
+              logical: timeScale.coordinateToLogical(pos.x),
+              time: timeScale.coordinateToTime(pos.x),
+              x: pos.x,
+              price: price,
+              text: text
+            });
+            redrawCanvas();
+          }
+          setDrawingTool('crosshair');
+          return;
+        }
+
+        // B. Các công cụ 2-Click (Trendline, Box FVG, Fibonacci)
+        if (drawingState.step === 0) {
+          // Bấm Điểm 1
+          drawingState.p1 = {
+            x: pos.x,
+            y: pos.y,
+            price: candleSeries.coordinateToPrice(pos.y),
+            logical: timeScale.coordinateToLogical(pos.x),
+            time: timeScale.coordinateToTime(pos.x)
+          };
+          drawingState.step = 1;
+          const bannerText = document.getElementById('activeToolText');
+          if (bannerText) {
+            bannerText.textContent = `📍 Đã đặt Điểm 1 (${Math.round(drawingState.p1.price)} đ) ➜ Di chuột và nhấp để chốt Điểm 2!`;
+          }
+          redrawCanvas();
+        } else if (drawingState.step === 1 && drawingState.p1) {
+          // Bấm Điểm 2
+          finishTwoPointDrawing(drawingState.p1, pos);
+        }
+      });
+
+      function finishTwoPointDrawing(pt1, pt2) {
+        if (!candleSeries || !tvChart) return;
+        const timeScale = tvChart.timeScale();
+        const p1Price = pt1.price ?? candleSeries.coordinateToPrice(pt1.y);
+        const p2Price = candleSeries.coordinateToPrice(pt2.y);
+        if (!p1Price || !p2Price) return;
+
+        const log1 = pt1.logical ?? timeScale.coordinateToLogical(pt1.x);
+        const log2 = timeScale.coordinateToLogical(pt2.x);
+        const t1 = pt1.time ?? timeScale.coordinateToTime(pt1.x);
+        const t2 = timeScale.coordinateToTime(pt2.x);
+
+        if (activeDrawingTool === 'trendline') {
+          drawings.push({
+            type: 'trendline',
+            logical1: log1,
+            logical2: log2,
+            time1: t1,
+            time2: t2,
+            x1: pt1.x,
+            x2: pt2.x,
+            y1Price: p1Price,
+            y2Price: p2Price,
+            color: '#00f0ff'
+          });
+        } else if (activeDrawingTool === 'rect') {
+          drawings.push({
+            type: 'rect',
+            logical1: log1,
+            logical2: log2,
+            time1: t1,
+            time2: t2,
+            x1: pt1.x,
+            x2: pt2.x,
+            price1: p1Price,
+            price2: p2Price,
+            color: 'rgba(245, 158, 11, 0.25)',
+            border: '#f59e0b',
+            label: 'ICT FVG / OB'
+          });
+        } else if (activeDrawingTool === 'fibo') {
+          drawings.push({
+            type: 'fibo',
+            logical1: log1,
+            logical2: log2,
+            time1: t1,
+            time2: t2,
+            x1: Math.min(pt1.x, pt2.x),
+            x2: Math.max(pt1.x, pt2.x),
+            p1: p1Price,
+            p2: p2Price
+          });
+        }
+
+        drawingState.step = 0;
+        drawingState.p1 = null;
+        redrawCanvas();
+        setDrawingTool('crosshair');
+      }
+
+      // Phím tắt chuẩn TradingView (Alt+T, Alt+H, Alt+B, Alt+F, Ctrl+Z, Escape)
+      window.addEventListener('keydown', (e) => {
+        // Alt + T: Trendline
+        if (e.altKey && (e.key === 't' || e.key === 'T')) {
+          e.preventDefault();
+          setDrawingTool('trendline');
+        }
+        // Alt + H: Horizontal line
+        else if (e.altKey && (e.key === 'h' || e.key === 'H')) {
+          e.preventDefault();
+          setDrawingTool('hline');
+        }
+        // Alt + B: Box / FVG
+        else if (e.altKey && (e.key === 'b' || e.key === 'B')) {
+          e.preventDefault();
+          setDrawingTool('rect');
+        }
+        // Alt + F: Fibonacci
+        else if (e.altKey && (e.key === 'f' || e.key === 'F')) {
+          e.preventDefault();
+          setDrawingTool('fibo');
+        }
+        // Ctrl + Z: Hoàn tác nét vẽ
+        else if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z') && !e.shiftKey) {
+          e.preventDefault();
+          undoLastDrawing();
+        }
+        // Phím ESC hủy thao tác vẽ
+        else if (e.key === 'Escape') {
+          if (drawingState.step === 1) {
+            drawingState.step = 0;
+            drawingState.p1 = null;
+            redrawCanvas();
+          } else if (activeDrawingTool !== 'crosshair') {
+            setDrawingTool('crosshair');
+          }
+        }
+      });
+
+      // Chuột phải hủy thao tác dở hoặc hoàn tác nét vẽ
+      canvas.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (drawingState.step === 1) {
+          drawingState.step = 0;
+          drawingState.p1 = null;
+          redrawCanvas();
+        } else if (drawings.length > 0) {
+          drawings.pop();
+          redrawCanvas();
+        }
+      });
+
+      // Tương tác cuộn mượt khi giữ chuột kéo trượt biểu đồ
+      const chartViewport = document.getElementById('chartViewport');
+      if (chartViewport && !chartViewport._dragRedrawBound) {
+        chartViewport._dragRedrawBound = true;
+        chartViewport.addEventListener('mousemove', (e) => {
+          if (e.buttons === 1 && activeDrawingTool === 'crosshair') {
+            requestAnimationFrame(redrawCanvas);
+          }
+        });
+      }
+    }
+
+    // Helper: Tính tọa độ X màn hình theo mốc thời gian & logical bar một cách tuyệt đối chính xác (không bao giờ bị lệch)
+    function getXCoordinate(d_item, isStart = true) {
+      if (!tvChart) return isStart ? (d_item.x1 ?? d_item.x) : (d_item.x2 ?? d_item.x);
+      const timeScale = tvChart.timeScale();
+
+      // 1. Ưu tiên kiểm tra mốc thời gian Unix (time) nếu có (tuyệt đối chính xác qua các khung thời gian và khi zoom/cuộn)
+      const time = isStart ? (d_item.time1 ?? d_item.time) : d_item.time2;
+      if (time) {
+        const x = timeScale.timeToCoordinate(time);
+        if (x !== null && !isNaN(x)) return x;
+      }
+
+      // 2. Tọa độ theo Logical Index
+      const logical = isStart ? (d_item.logical1 ?? d_item.logical) : d_item.logical2;
+      if (logical !== undefined && logical !== null && !isNaN(logical)) {
+        const x = timeScale.logicalToCoordinate(logical);
+        if (x !== null && !isNaN(x)) return x;
+
+        // Nếu điểm vẽ nằm ngoài màn hình (null), tự tính theo tỷ lệ range để không bị giật về tọa độ pixel cũ
+        const range = timeScale.getVisibleLogicalRange();
+        if (range && (range.to - range.from) > 0) {
+          const canvas = document.getElementById('drawingCanvas');
+          const chartWidth = Math.max(100, (canvas ? canvas.width : 1000) - 55);
+          const barSpacing = chartWidth / (range.to - range.from);
+          return (logical - range.from) * barSpacing;
+        }
+      }
+
+      return isStart ? (d_item.x1 ?? d_item.x) : (d_item.x2 ?? d_item.x);
+    }
+
+    function redrawCanvas() {
+      const canvas = document.getElementById('drawingCanvas');
+      if (!canvas || !tvChart || !candleSeries) return;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const timeScale = tvChart.timeScale();
+
+      // ==========================================
+      // A. VẼ TỰ ĐỘNG ICT / SMART MONEY CONCEPTS
+      // ==========================================
+      if (autoICTEnabled && appData && appData.tradingView && appData.tradingView.candles) {
+        const candles = appData.tradingView.candles;
+        const recent = candles.slice(-50);
+
+        // 1. Tự động tìm & vẽ các khối Fair Value Gap (FVG)
+        for (let i = 2; i < recent.length; i++) {
+          const c0 = recent[i - 2];
+          const c1 = recent[i - 1];
+          const c2 = recent[i];
+
+          // Bullish FVG (c0.high < c2.low)
+          if (c0.high < c2.low) {
+            const yTop = candleSeries.priceToCoordinate(c2.low);
+            const yBtm = candleSeries.priceToCoordinate(c0.high);
+            const x0 = timeScale.timeToCoordinate(c0.time);
+            const x2 = timeScale.timeToCoordinate(c2.time);
+            if (yTop !== null && yBtm !== null && x0 !== null && x2 !== null) {
+              const topY = Math.min(yTop, yBtm);
+              const height = Math.abs(yTop - yBtm);
+              const leftX = Math.min(x0, x2);
+              const width = Math.max(25, Math.abs(x2 - x0) + 15);
+
+              ctx.fillStyle = 'rgba(16, 185, 129, 0.2)';
+              ctx.fillRect(leftX, topY, width, height);
+              ctx.strokeStyle = '#10b981';
+              ctx.lineWidth = 1;
+              ctx.setLineDash([2, 2]);
+              ctx.strokeRect(leftX, topY, width, height);
+              ctx.setLineDash([]);
+
+              ctx.fillStyle = '#34d399';
+              ctx.font = '9px "JetBrains Mono", monospace';
+              ctx.fillText('FVG (+)', leftX + 4, topY + 11);
+            }
+          }
+
+          // Bearish FVG (c0.low > c2.high)
+          else if (c0.low > c2.high) {
+            const yTop = candleSeries.priceToCoordinate(c0.low);
+            const yBtm = candleSeries.priceToCoordinate(c2.high);
+            const x0 = timeScale.timeToCoordinate(c0.time);
+            const x2 = timeScale.timeToCoordinate(c2.time);
+            if (yTop !== null && yBtm !== null && x0 !== null && x2 !== null) {
+              const topY = Math.min(yTop, yBtm);
+              const height = Math.abs(yTop - yBtm);
+              const leftX = Math.min(x0, x2);
+              const width = Math.max(25, Math.abs(x2 - x0) + 15);
+
+              ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
+              ctx.fillRect(leftX, topY, width, height);
+              ctx.strokeStyle = '#ef4444';
+              ctx.lineWidth = 1;
+              ctx.setLineDash([2, 2]);
+              ctx.strokeRect(leftX, topY, width, height);
+              ctx.setLineDash([]);
+
+              ctx.fillStyle = '#f87171';
+              ctx.font = '9px "JetBrains Mono", monospace';
+              ctx.fillText('FVG (-)', leftX + 4, topY + 11);
+            }
+          }
+        }
+
+        // 2. Tự động vẽ 2 đường BSL (Đỉnh) & SSL (Đáy)
+        let maxC = recent[0], minC = recent[0];
+        recent.forEach(c => {
+          if (c.high > maxC.high) maxC = c;
+          if (c.low < minC.low) minC = c;
+        });
+
+        const yBsl = candleSeries.priceToCoordinate(maxC.high);
+        if (yBsl !== null) {
+          ctx.beginPath();
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([5, 5]);
+          ctx.moveTo(0, yBsl);
+          ctx.lineTo(canvas.width, yBsl);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#ef4444';
+          ctx.font = 'bold 10px "JetBrains Mono", monospace';
+          ctx.fillText(`BSL: ${maxC.high} đ (Đỉnh cản)`, canvas.width - 150, yBsl - 4);
+        }
+
+        const ySsl = candleSeries.priceToCoordinate(minC.low);
+        if (ySsl !== null) {
+          ctx.beginPath();
+          ctx.strokeStyle = '#06b6d4';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([5, 5]);
+          ctx.moveTo(0, ySsl);
+          ctx.lineTo(canvas.width, ySsl);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#06b6d4';
+          ctx.font = 'bold 10px "JetBrains Mono", monospace';
+          ctx.fillText(`SSL: ${minC.low} đ (Đáy hỗ trợ)`, canvas.width - 155, ySsl - 4);
+        }
+
+        // 3. Đường Cân Bằng Equilibrium (810 đ)
+        const yEq = candleSeries.priceToCoordinate(810);
+        if (yEq !== null) {
+          ctx.beginPath();
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.6)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 3]);
+          ctx.moveTo(0, yEq);
+          ctx.lineTo(canvas.width, yEq);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = '#f59e0b';
+          ctx.font = '9px "JetBrains Mono", monospace';
+          ctx.fillText('EQUILIBRIUM (810 đ)', 10, yEq - 3);
+        }
+      }
+
+      // ==========================================
+      // B. VẼ CÁC HÌNH VẼ THỦ CÔNG ĐÃ LƯU
+      // ==========================================
+      drawings.forEach(d => {
+        // 1. Đường ngang H-Line
+        if (d.type === 'hline') {
+          const y = candleSeries.priceToCoordinate(d.price);
+          if (y !== null && y >= 0 && y <= canvas.height) {
+            ctx.beginPath();
+            ctx.strokeStyle = d.color || (d.price >= 810 ? '#ef4444' : '#10b981');
+            ctx.lineWidth = 1.8;
+            ctx.setLineDash([5, 4]);
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Huy hiệu giá bên phải chuẩn TradingView
+            const badgeW = 75, badgeH = 18;
+            ctx.fillStyle = d.color || (d.price >= 810 ? '#ef4444' : '#10b981');
+            ctx.fillRect(canvas.width - badgeW, y - 9, badgeW, badgeH);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(d.label || `${d.price} đ`, canvas.width - (badgeW / 2), y + 3.5);
+            ctx.textAlign = 'left';
+          }
+        }
+
+        // 2. Đường xu hướng Trendline
+        else if (d.type === 'trendline') {
+          const x1 = getXCoordinate(d, true);
+          const x2 = getXCoordinate(d, false);
+          const y1 = candleSeries.priceToCoordinate(d.y1Price);
+          const y2 = candleSeries.priceToCoordinate(d.y2Price);
+          if (x1 !== null && x2 !== null && y1 !== null && y2 !== null) {
+            ctx.beginPath();
+            ctx.strokeStyle = d.color || '#00f0ff';
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = 'round';
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+
+            // Điểm neo 2 đầu cực đẹp chuẩn TradingView
+            [ [x1, y1], [x2, y2] ].forEach(([px, py]) => {
+              ctx.fillStyle = '#0f1420';
+              ctx.strokeStyle = d.color || '#00f0ff';
+              ctx.lineWidth = 2;
+              ctx.beginPath(); ctx.arc(px, py, 4.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+              ctx.fillStyle = '#ffffff';
+              ctx.beginPath(); ctx.arc(px, py, 2, 0, Math.PI * 2); ctx.fill();
+            });
+          }
+        }
+
+        // 3. Khối Hộp FVG / OB (Tự động bám chặt theo nến khi zoom/cuộn)
+        else if (d.type === 'rect') {
+          const x1 = getXCoordinate(d, true);
+          const x2 = getXCoordinate(d, false);
+          const y1 = candleSeries.priceToCoordinate(d.price1);
+          const y2 = candleSeries.priceToCoordinate(d.price2);
+          if (x1 !== null && x2 !== null && y1 !== null && y2 !== null) {
+            const topY = Math.min(y1, y2);
+            const height = Math.max(4, Math.abs(y1 - y2));
+            const leftX = Math.min(x1, x2);
+            const width = Math.max(12, Math.abs(x2 - x1));
+
+            ctx.fillStyle = d.color || 'rgba(245, 158, 11, 0.22)';
+            ctx.fillRect(leftX, topY, width, height);
+
+            ctx.strokeStyle = d.border || '#f59e0b';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(leftX, topY, width, height);
+
+            // 4 điểm neo góc hộp
+            [
+              [leftX, topY], [leftX + width, topY],
+              [leftX, topY + height], [leftX + width, topY + height]
+            ].forEach(([cx, cy]) => {
+              ctx.fillStyle = '#ffffff';
+              ctx.strokeStyle = d.border || '#f59e0b';
+              ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.arc(cx, cy, 2.5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            });
+
+            // Badge nhãn FVG
+            const labelText = d.label || 'ICT FVG / OB';
+            ctx.font = 'bold 9px "JetBrains Mono", monospace';
+            const lw = ctx.measureText(labelText).width + 10;
+            ctx.fillStyle = 'rgba(15, 20, 32, 0.85)';
+            ctx.fillRect(leftX + 4, topY + 4, lw, 16);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText(labelText, leftX + 9, topY + 16);
+          }
+        }
+
+        // 4. Khung Vị Thế Long / Short (R:R Tool TradingView)
+        else if (d.type === 'rr') {
+          const x = getXCoordinate(d, true);
+          const yEntry = candleSeries.priceToCoordinate(d.entryPrice);
+          const yStop = candleSeries.priceToCoordinate(d.stopLoss);
+          const yTarget = candleSeries.priceToCoordinate(d.target);
+
+          if (x !== null && yEntry !== null && yStop !== null && yTarget !== null) {
+            const width = 120;
+
+            // Target Box (Xanh lá)
+            const targetTop = Math.min(yEntry, yTarget);
+            const targetHeight = Math.abs(yEntry - yTarget);
+            ctx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+            ctx.fillRect(x, targetTop, width, targetHeight);
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x, targetTop, width, targetHeight);
+
+            // Stop Loss Box (Đỏ)
+            const stopTop = Math.min(yEntry, yStop);
+            const stopHeight = Math.abs(yEntry - yStop);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.25)';
+            ctx.fillRect(x, stopTop, width, stopHeight);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(x, stopTop, width, stopHeight);
+
+            // Đường Entry ở giữa
+            ctx.beginPath();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(x, yEntry);
+            ctx.lineTo(x + width, yEntry);
+            ctx.stroke();
+
+            // Label R:R
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.fillText(`${d.isLong ? 'LONG' : 'SHORT'} R:R ${d.rrRatio}`, x + 6, targetTop + 14);
+            ctx.fillStyle = '#34d399';
+            ctx.fillText(`Mục tiêu: ${d.target} đ`, x + 6, targetTop + 28);
+            ctx.fillStyle = '#f87171';
+            ctx.fillText(`Cắt lỗ: ${d.stopLoss} đ`, x + 6, stopTop + stopHeight - 6);
+          }
+        }
+
+        // 5. Thước Fibo ICT
+        else if (d.type === 'fibo') {
+          const x1 = getXCoordinate(d, true);
+          const x2 = Math.max((x1 || 0) + 70, getXCoordinate(d, false) || (canvas.width - 20));
+          const pLow = Math.min(d.p1, d.p2);
+          const pHigh = Math.max(d.p1, d.p2);
+          const diff = pHigh - pLow;
+
+          const levels = [
+            { ratio: 1.0, label: '1.0 (Đỉnh)', color: '#ef4444' },
+            { ratio: 0.79, label: '0.79 (OTE)', color: '#f97316' },
+            { ratio: 0.705, label: '0.705 (ICT OTE)', color: '#f59e0b' },
+            { ratio: 0.618, label: '0.618 (Fibo Vàng)', color: '#eab308' },
+            { ratio: 0.50, label: '0.50 (Equilibrium)', color: '#10b981' },
+            { ratio: 0.0, label: '0.0 (Đáy)', color: '#06b6d4' }
+          ];
+
+          levels.forEach(lvl => {
+            const p = pLow + diff * lvl.ratio;
+            const y = candleSeries.priceToCoordinate(p);
+            if (y !== null && y >= 0 && y <= canvas.height && x1 !== null) {
+              ctx.beginPath();
+              ctx.strokeStyle = lvl.color;
+              ctx.lineWidth = 1.2;
+              ctx.setLineDash(lvl.ratio === 0.705 || lvl.ratio === 0.5 ? [] : [3, 3]);
+              ctx.moveTo(x1, y);
+              ctx.lineTo(x2, y);
+              ctx.stroke();
+              ctx.setLineDash([]);
+
+              ctx.fillStyle = lvl.color;
+              ctx.font = '10px "JetBrains Mono", monospace';
+              ctx.fillText(`${lvl.label} - ${p.toFixed(0)} đ`, x1 + 8, y - 3);
+            }
+          });
+        }
+
+        // 6. Ghi chú Text trên nến
+        else if (d.type === 'text') {
+          const x = getXCoordinate(d, true);
+          const y = candleSeries.priceToCoordinate(d.price);
+          if (x !== null && y !== null && y >= 0 && y <= canvas.height) {
+            ctx.fillStyle = '#0f172a';
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1;
+            const textWidth = ctx.measureText(d.text).width + 16;
+            ctx.fillRect(x - 8, y - 22, textWidth, 20);
+            ctx.strokeRect(x - 8, y - 22, textWidth, 20);
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.fillText(d.text, x, y - 8);
+
+            // Mũi tên nhỏ chỉ vào điểm
+            ctx.beginPath();
+            ctx.fillStyle = '#f59e0b';
+            ctx.moveTo(x, y - 2);
+            ctx.lineTo(x - 4, y - 6);
+            ctx.lineTo(x + 4, y - 6);
+            ctx.fill();
+          }
+        }
+      });
+
+      // ==========================================
+      // C. TRADINGVIEW LIVE REAL-TIME PREVIEW
+      // (Hiển thị tức thì khi rê chuột để vẽ cực dễ)
+      // ==========================================
+      if (activeDrawingTool !== 'crosshair' && drawingState.mousePos) {
+        const mx = drawingState.mousePos.x;
+        const my = drawingState.mousePos.y;
+        const currentPrice = candleSeries.coordinateToPrice(my);
+
+        // 1. Live Preview cho Đường Ngang H-Line
+        if (activeDrawingTool === 'hline' && currentPrice !== null) {
+          ctx.beginPath();
+          ctx.strokeStyle = currentPrice >= 810 ? '#ef4444' : '#10b981';
+          ctx.lineWidth = 1.8;
+          ctx.setLineDash([4, 4]);
+          ctx.moveTo(0, my);
+          ctx.lineTo(canvas.width, my);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Tâm ngắm tại con trỏ
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.arc(mx, my, 5, 0, Math.PI * 2); ctx.stroke();
+
+          // Huy hiệu giá bên phải trục giá
+          const badgeW = 75, badgeH = 18;
+          ctx.fillStyle = currentPrice >= 810 ? '#ef4444' : '#10b981';
+          ctx.fillRect(canvas.width - badgeW, my - 9, badgeW, badgeH);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`${Math.round(currentPrice)} đ`, canvas.width - (badgeW / 2), my + 3.5);
+          ctx.textAlign = 'left';
+        }
+
+        // 2. Live Preview cho Trendline
+        else if (activeDrawingTool === 'trendline') {
+          if (drawingState.step === 1 && drawingState.p1) {
+            const p1 = drawingState.p1;
+            // Vẽ đường nối từ Điểm 1 tới con trỏ chuột
+            ctx.beginPath();
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2.5;
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(mx, my);
+            ctx.stroke();
+
+            // Điểm neo 1
+            ctx.fillStyle = '#0f1420';
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.arc(p1.x, p1.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(p1.x, p1.y, 2, 0, Math.PI * 2); ctx.fill();
+
+            // Điểm con trỏ đang rê
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath(); ctx.arc(mx, my, 4, 0, Math.PI * 2); ctx.fill();
+
+            // Tooltip delta giá & chiều dài
+            if (currentPrice !== null && p1.price !== null) {
+              const delta = Math.round(currentPrice - p1.price);
+              const sign = delta >= 0 ? '+' : '';
+              ctx.fillStyle = 'rgba(15, 20, 32, 0.85)';
+              ctx.strokeStyle = '#00f0ff';
+              ctx.lineWidth = 1;
+              const tipText = `Điểm 2: ${Math.round(currentPrice)} đ (${sign}${delta} đ)`;
+              ctx.font = '10px "JetBrains Mono", monospace';
+              const tw = ctx.measureText(tipText).width + 12;
+              ctx.fillRect(mx + 10, my - 22, tw, 20);
+              ctx.strokeRect(mx + 10, my - 22, tw, 20);
+              ctx.fillStyle = '#00f0ff';
+              ctx.fillText(tipText, mx + 16, my - 8);
+            }
+          } else {
+            // Khi chưa bấm điểm 1: Vẽ tâm ngắm tại con trỏ
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI * 2); ctx.stroke();
+            ctx.fillStyle = '#00f0ff';
+            ctx.beginPath(); ctx.arc(mx, my, 2, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+
+        // 3. Live Preview cho Khối Hộp FVG / Order Block
+        else if (activeDrawingTool === 'rect') {
+          if (drawingState.step === 1 && drawingState.p1) {
+            const p1 = drawingState.p1;
+            const topY = Math.min(p1.y, my);
+            const height = Math.max(4, Math.abs(my - p1.y));
+            const leftX = Math.min(p1.x, mx);
+            const width = Math.max(10, Math.abs(mx - p1.x));
+
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.28)';
+            ctx.fillRect(leftX, topY, width, height);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 3]);
+            ctx.strokeRect(leftX, topY, width, height);
+            ctx.setLineDash([]);
+
+            // 4 Điểm neo góc hộp
+            const corners = [
+              [leftX, topY], [leftX + width, topY],
+              [leftX, topY + height], [leftX + width, topY + height]
+            ];
+            corners.forEach(([cx, cy]) => {
+              ctx.fillStyle = '#ffffff';
+              ctx.strokeStyle = '#f59e0b';
+              ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            });
+
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 10px "JetBrains Mono", monospace';
+            ctx.fillText('ICT FVG / OB (Nhấp để chốt)', leftX + 6, topY + 13);
+          } else {
+            // Khi chưa bấm điểm 1
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI * 2); ctx.stroke();
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath(); ctx.arc(mx, my, 2, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+
+        // 4. Live Preview cho Thước Fibonacci ICT
+        else if (activeDrawingTool === 'fibo') {
+          if (drawingState.step === 1 && drawingState.p1 && currentPrice !== null) {
+            const p1 = drawingState.p1;
+            const x1 = Math.min(p1.x, mx);
+            const x2 = Math.max(p1.x, mx, x1 + 80);
+            const pLow = Math.min(p1.price, currentPrice);
+            const pHigh = Math.max(p1.price, currentPrice);
+            const diff = pHigh - pLow;
+
+            const levels = [
+              { ratio: 1.0, label: '1.0 (Đỉnh)', color: '#ef4444' },
+              { ratio: 0.705, label: '0.705 (OTE)', color: '#f59e0b' },
+              { ratio: 0.50, label: '0.50 (EQ)', color: '#10b981' },
+              { ratio: 0.0, label: '0.0 (Đáy)', color: '#06b6d4' }
+            ];
+
+            levels.forEach(lvl => {
+              const p = pLow + diff * lvl.ratio;
+              const y = candleSeries.priceToCoordinate(p);
+              if (y !== null) {
+                ctx.beginPath();
+                ctx.strokeStyle = lvl.color;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 2]);
+                ctx.moveTo(x1, y);
+                ctx.lineTo(x2, y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.fillStyle = lvl.color;
+                ctx.font = '9px "JetBrains Mono", monospace';
+                ctx.fillText(`${lvl.label} - ${p.toFixed(0)} đ`, x1 + 6, y - 2);
+              }
+            });
+          } else {
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.arc(mx, my, 6, 0, Math.PI * 2); ctx.stroke();
+          }
+        }
+
+        // 5. Live Preview cho R:R Tool
+        else if (activeDrawingTool === 'rr' && currentPrice !== null) {
+          const isLong = currentPrice < 810;
+          ctx.fillStyle = isLong ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+          ctx.strokeStyle = isLong ? '#10b981' : '#ef4444';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(mx - 60, my - 25, 120, 50);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText(`Bấm để đặt vị thế ${isLong ? 'LONG (Mua)' : 'SHORT (Bán)'}`, mx, my + 4);
+          ctx.textAlign = 'left';
+        }
+      }
+    }
+
+    // Tự động căn đều nến và biểu đồ vừa khít khung hình chuẩn TradingView
+    function autoFitChart() {
+      if (!tvChart || !appData || !appData.tradingView) return;
+      const total = appData.tradingView.candles.length;
+      const count = typeof currentZoomRange === 'number' ? currentZoomRange : 35;
+      tvChart.timeScale().setVisibleLogicalRange({
+        from: Math.max(0, total - count),
+        to: total + 3
+      });
+      tvChart.priceScale('right').applyOptions({ autoScale: true });
+      userIsScrolledBack = false;
+      const btn = document.getElementById('btnScrollToRealtime');
+      if (btn) btn.classList.add('hidden');
+      redrawCanvas();
+    }
+
+    // Cuộn ngay về nến hiện tại
+    function scrollToRealtime() {
+      autoFitChart();
+    }
+
+    // Đổi chế độ lăn chuột: Phóng to / Mở rộng (Zoom) vs Trượt trái/phải
+    function toggleWheelMode() {
+      mouseWheelMode = mouseWheelMode === 'zoom' ? 'scroll' : 'zoom';
+      const text = document.getElementById('wheelModeText');
+      const btn = document.getElementById('btnWheelMode');
+
+      if (mouseWheelMode === 'zoom') {
+        text.textContent = 'Lăn Chuột: Mở Rộng / Zoom';
+        btn.classList.add('text-cyan-400', 'border-cyan-500/40');
+        btn.classList.remove('text-amber-300', 'border-amber-500/40');
+      } else {
+        text.textContent = 'Lăn Chuột: Trượt Trái/Phải';
+        btn.classList.add('text-amber-300', 'border-amber-500/40');
+        btn.classList.remove('text-cyan-400', 'border-cyan-500/40');
+      }
+    }
+
+    // Toggle MA Lines
+    function toggleMALines() {
+      showMALines = !showMALines;
+      if (ma10Series) ma10Series.applyOptions({ visible: showMALines });
+      if (ma20Series) ma20Series.applyOptions({ visible: showMALines });
+
+      const dot = document.getElementById('maIndicatorDot');
+      const text = document.getElementById('maBtnText');
+      const btn = document.getElementById('btnToggleMA');
+
+      if (showMALines) {
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-400';
+        text.textContent = 'Đang Hiện MA';
+        btn.classList.add('border-amber-500/40', 'text-amber-300');
+      } else {
+        dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-500';
+        text.textContent = 'Bật Đường MA';
+        btn.classList.remove('border-amber-500/40', 'text-amber-300');
+      }
+    }
+
+    // Set Candle Zoom (25 nến, 35 nến chuẩn ICT, 60 nến, 120 nến)
+    function setCandleZoom(range) {
+      currentZoomRange = range;
+
+      document.querySelectorAll('.zoom-btn').forEach(b => {
+        b.classList.remove('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
+        b.classList.add('text-slate-400');
+      });
+      const activeBtn = document.getElementById(`zoom-${range}`);
+      if (activeBtn) {
+        activeBtn.classList.add('active', 'bg-amber-500', 'text-slate-950', 'font-bold');
+        activeBtn.classList.remove('text-slate-400');
+      }
+
+      applyCandleZoom();
+    }
+
+    function applyCandleZoom() {
+      if (!tvChart || !appData || !appData.tradingView) return;
+      if (currentZoomRange === 'all') {
+        tvChart.timeScale().fitContent();
+        return;
+      }
+      const totalCandles = appData.tradingView.candles.length;
+      const count = typeof currentZoomRange === 'number' ? currentZoomRange : 35;
+      tvChart.timeScale().setVisibleLogicalRange({
+        from: Math.max(0, totalCandles - count),
+        to: totalCandles + 2
+      });
+    }
+
+    // Compute ICT Liquidity Levels (BSL & SSL) from visible/recent candles
+    function updateICTAnalysis() {
+      if (!appData || !appData.tradingView || !appData.tradingView.candles) return;
+      const candles = appData.tradingView.candles;
+      const recent = candles.slice(-35); // 35 kỳ gần nhất
+
+      let highest = recent[0];
+      let lowest = recent[0];
+
+      recent.forEach(c => {
+        if (c.high > highest.high) highest = c;
+        if (c.low < lowest.low) lowest = c;
+      });
+
+      document.getElementById('ictBslValue').textContent = `${highest.high} điểm`;
+      document.getElementById('ictSslValue').textContent = `${lowest.low} điểm`;
+
+      const last = recent[recent.length - 1];
+      const biasEl = document.getElementById('ictBiasBadge');
+
+      if (last.close >= 810) {
+        biasEl.textContent = 'BULLISH BIAS (Thiên về LỚN)';
+        biasEl.className = 'text-base font-black text-emerald-400 font-mono';
+      } else {
+        biasEl.textContent = 'BEARISH BIAS (Thiên về NHỎ)';
+        biasEl.className = 'text-base font-black text-red-400 font-mono';
+      }
+    }
+
+    // Tab 2: Prediction Hero
+    function renderPredictionHero() {
+      if (!appData || !appData.prediction) return;
+      const pred = appData.prediction;
+
+      document.getElementById('predNextDrawId').textContent = '#' + pred.nextDrawId;
+      document.getElementById('predConfidence').textContent = pred.confidenceScore;
+
+      const pair = pred.recommendations.bestPair;
+      document.getElementById('pairWinProb').textContent = pair.winProb;
+      document.getElementById('pairBallsDisplay').innerHTML = pair.numbers.map(n => `
+        <span class="ball-md bg-gradient-to-tr from-amber-500 to-yellow-300 text-slate-950 font-black shadow-md shadow-amber-500/20">${n}</span>
+      `).join('');
+
+      const trio = pred.recommendations.bestTrio;
+      document.getElementById('trioWinProb').textContent = trio.winProb;
+      document.getElementById('trioBallsDisplay').innerHTML = trio.numbers.map(n => `
+        <span class="ball-md bg-gradient-to-tr from-purple-500 to-indigo-400 text-white font-black shadow-md shadow-purple-500/20">${n}</span>
+      `).join('');
+
+      const steiner = pred.recommendations.bestSteiner;
+      document.getElementById('steinerBallsDisplay').innerHTML = steiner.numbers.map(n => `
+        <span class="ball-sm bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold">${n}</span>
+      `).join('');
+
+      document.getElementById('parityRecText').textContent = pred.parity.recommendation;
+      document.getElementById('chanPercent').textContent = pred.parity.chan;
+      document.getElementById('lePercent').textContent = pred.parity.le;
+      document.getElementById('barChan').style.width = pred.parity.chan;
+      document.getElementById('barLe').style.width = pred.parity.le;
+
+      document.getElementById('rangeRecText').textContent = pred.range.recommendation;
+      document.getElementById('lonPercent').textContent = pred.range.lon;
+      document.getElementById('nhoPercent').textContent = pred.range.nho;
+      document.getElementById('barLon').style.width = pred.range.lon;
+      document.getElementById('barNho').style.width = pred.range.nho;
+
+      const listEl = document.getElementById('topProbList');
+      listEl.innerHTML = '';
+      pred.topBalls.slice(0, 10).forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'p-2 rounded-lg bg-brand-bg border border-brand-border flex items-center justify-between hover:border-amber-400 transition';
+        item.innerHTML = `
+          <div class="flex items-center space-x-1.5">
+            <span class="ball-sm bg-slate-800 text-amber-400 border border-amber-500/30 font-black">${b.ball}</span>
+          </div>
+          <div class="text-right">
+            <div class="text-emerald-400 font-bold">${b.predictedProb}%</div>
+            <div class="text-[9px] text-slate-500">cách ${b.gap} kỳ</div>
+          </div>
+        `;
+        listEl.appendChild(item);
+      });
+    }
+
+    // Tab 3: 80 Balls Grid
+    function renderBallsGrid(filter = 'all') {
+      const container = document.getElementById('ballsGrid');
+      container.innerHTML = '';
+      if (!appData || !appData.stats) return;
+
+      appData.stats.forEach(item => {
+        if (filter === 'hot' && !item.status.includes('NÓNG')) return;
+        if (filter === 'cold' && !item.status.includes('LẠNH')) return;
+
+        const isSelected = selectedPool.includes(item.num);
+        let borderClass = 'border-brand-border';
+        let bgClass = 'bg-brand-bg';
+        let textClass = 'text-slate-300';
+
+        if (item.status.includes('NÓNG')) {
+          borderClass = 'border-red-500/40';
+          bgClass = 'bg-red-500/5';
+          textClass = 'text-red-400 font-bold';
+        } else if (item.status.includes('LẠNH')) {
+          borderClass = 'border-cyan-500/40';
+          bgClass = 'bg-cyan-500/5';
+          textClass = 'text-cyan-400';
+        }
+
+        if (isSelected) {
+          borderClass = 'border-amber-400 ring-1 ring-amber-400';
+          bgClass = 'bg-amber-500/10';
+        }
+
+        const card = document.createElement('div');
+        card.className = `p-2 rounded border ${borderClass} ${bgClass} cursor-pointer hover:border-amber-400 transition text-center select-none`;
+        card.onclick = () => togglePoolBall(item.num);
+        card.innerHTML = `
+          <div class="font-black ${textClass}">${item.ball}</div>
+          <div class="text-[10px] text-slate-400">${item.percent}%</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function togglePoolBall(num) {
+      const idx = selectedPool.indexOf(num);
+      if (idx !== -1) selectedPool.splice(idx, 1);
+      else selectedPool.push(num);
+      renderBallsGrid();
+      generateTicketsFromPool();
+    }
+
+    function updateWheelStrategy() {
+      generateTicketsFromPool();
+    }
+
+    function generateTicketsFromPool() {
+      const strat = document.querySelector('input[name="wheelStrategy"]:checked').value;
+      generatedTicketsList = [];
+
+      let poolToUse = [...selectedPool];
+      if (strat === 'steiner_b3') {
+        while (poolToUse.length < 7) poolToUse.push(poolToUse.length + 1);
+        const p7 = poolToUse.slice(0, 7).map(n => n < 10 ? '0' + n : '' + n);
+        const indices = [
+          [0, 1, 2], [0, 3, 4], [0, 5, 6],
+          [1, 3, 5], [1, 4, 6], [2, 3, 6], [2, 4, 5]
+        ];
+        generatedTicketsList = indices.map(idx => idx.map(i => p7[i]));
+      } else {
+        while (poolToUse.length < 10) poolToUse.push(poolToUse.length + 1);
+        const p10 = poolToUse.slice(0, 10).map(n => n < 10 ? '0' + n : '' + n);
+        for (let i = 0; i < p10.length; i++) {
+          for (let j = i + 1; j < p10.length; j++) {
+            generatedTicketsList.push([p10[i], p10[j]]);
+          }
+        }
+      }
+
+      renderGeneratedTickets();
+    }
+
+    function renderGeneratedTickets() {
+      const container = document.getElementById('ticketsContainer');
+      container.innerHTML = '';
+
+      generatedTicketsList.forEach((t, i) => {
+        const card = document.createElement('div');
+        card.className = 'p-2 rounded bg-brand-bg border border-brand-border flex items-center justify-between text-xs';
+        const balls = t.map(n => `<span class="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 font-bold">${n}</span>`).join(' ');
+        card.innerHTML = `
+          <span class="text-slate-500 font-bold text-[10px]">#${i + 1}</span>
+          <div>${balls}</div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function copyGeneratedTickets() {
+      if (generatedTicketsList.length === 0) return;
+      const text = generatedTicketsList.map((t, i) => `Vé ${i + 1}: ${t.join(' - ')}`).join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyBtnText');
+        btn.textContent = 'Đã Copy!';
+        setTimeout(() => { btn.textContent = 'Copy Vé'; }, 2000);
+      });
+    }
+
+    function renderOverlapTable() {
+      const tbody = document.getElementById('overlapTableBody');
+      tbody.innerHTML = '';
+
+      const theoreticalData = [
+        { k: 0, pTheo: '0.12%', pairs: '53,5 triệu', note: 'Hiếm gặp (1/1.000 kỳ)' },
+        { k: 1, pTheo: '1.16%', pairs: '522,3 triệu', note: 'Ít xuất hiện' },
+        { k: 2, pTheo: '4.97%', pairs: '2,24 tỷ', note: 'Ít xuất hiện' },
+        { k: 3, pTheo: '12.49%', pairs: '5,64 tỷ', note: 'Thường xuyên' },
+        { k: 4, pTheo: '20.50%', pairs: '9,26 tỷ', note: 'VÙNG TẬP TRUNG CAO' },
+        { k: 5, pTheo: '23.33%', pairs: '10,53 tỷ', note: 'ĐỈNH CÂN BẰNG TỰ NHIÊN' },
+        { k: 6, pTheo: '19.02%', pairs: '8,59 tỷ', note: 'VÙNG TẬP TRUNG CAO' },
+        { k: 7, pTheo: '11.33%', pairs: '5,12 tỷ', note: 'Thường xuyên' },
+        { k: 8, pTheo: '4.99%', pairs: '2,25 tỷ', note: 'Ít gặp' },
+        { k: 9, pTheo: '1.63%', pairs: '735 triệu', note: 'Hiếm gặp' },
+        { k: 10, pTheo: '0.39%', pairs: '177,9 triệu', note: 'Rất hiếm' },
+        { k: 11, pTheo: '0.07%', pairs: '31,7 triệu', note: 'Cực hiếm' },
+        { k: 12, pTheo: '0.009%', pairs: '4,1 triệu', note: 'Cực hiếm' },
+        { k: 13, pTheo: '0.0008%', pairs: '382 nghìn', note: 'Chạm trần lịch sử' },
+        { k: 14, pTheo: '0.00005%', pairs: '24 nghìn', note: 'Chạm trần lịch sử' },
+        { k: 15, pTheo: '0.000002%', pairs: '1.081 cặp', note: 'Chạm trần lịch sử' },
+        { k: 16, pTheo: '0.00000006%', pairs: '~30 cặp', note: 'Kỷ lục tối đa lịch sử' },
+        { k: 17, pTheo: '< 0.00000001%', pairs: '0.49 cặp', note: 'VÙNG BẤT KHẢ THI' },
+        { k: 18, pTheo: '0.00%', pairs: '0', note: 'VÙNG CẤM TOÁN HỌC' },
+        { k: 19, pTheo: '0.00%', pairs: '0', note: 'VÙNG CẤM TOÁN HỌC' },
+        { k: 20, pTheo: '0.00%', pairs: '0', note: 'VÙNG CẤM TOÁN HỌC' }
+      ];
+
+      theoreticalData.forEach(row => {
+        let realP = '0.00%';
+        if (appData && appData.overlapDist && appData.overlapDist[row.k]) {
+          realP = appData.overlapDist[row.k].percent + '%';
+        }
+        let rowClass = row.k >= 4 && row.k <= 6 ? 'bg-emerald-500/10 text-emerald-300 font-bold' : '';
+
+        const tr = document.createElement('tr');
+        tr.className = `border-b border-brand-border/30 ${rowClass}`;
+        tr.innerHTML = `
+          <td class="p-2.5 font-bold">Trùng ${row.k} số</td>
+          <td class="p-2.5">${row.pTheo}</td>
+          <td class="p-2.5 text-emerald-400 font-bold">${realP}</td>
+          <td class="p-2.5">${row.pairs}</td>
+          <td class="p-2.5 text-[10px]">${row.note}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderHistoryTable(appendMore = false) {
+      const tbody = document.getElementById('historyTableBody');
+      if (!tbody || !appData || !appData.draws) return;
+
+      const counterEl = document.getElementById('historyCounter');
+      if (counterEl) counterEl.textContent = `${appData.draws.length} kỳ quay`;
+
+      if (!appendMore) {
+        tbody.innerHTML = '';
+      }
+
+      const currentCount = appendMore ? tbody.children.length : 0;
+      const slice = appData.draws.slice(currentCount, currentCount + 30);
+      const fragment = document.createDocumentFragment();
+
+      slice.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-brand-border/30 hover:bg-brand-cardHover/40';
+        const balls = d.numbers.map(n => `<span class="ball-sm bg-slate-800 text-slate-200 border border-slate-700 m-0.5">${n}</span>`).join('');
+        tr.innerHTML = `
+          <td class="p-2.5">
+            <span class="text-amber-400 font-bold">#${d.drawId}</span>
+            <div class="text-[10px] text-slate-500">${d.date}</div>
+          </td>
+          <td class="p-2.5 flex flex-wrap max-w-md">${balls}</td>
+          <td class="p-2.5 font-bold text-slate-300">${d.chanLe}</td>
+        `;
+        fragment.appendChild(tr);
+      });
+      tbody.appendChild(fragment);
+
+      let moreBtn = document.getElementById('btnLoadMoreHistory');
+      if (!moreBtn) {
+        const tableContainer = tbody.closest('.overflow-x-auto') || tbody.parentElement;
+        const btnWrapper = document.createElement('div');
+        btnWrapper.className = 'p-3 text-center border-t border-brand-border/40';
+        btnWrapper.innerHTML = `<button id="btnLoadMoreHistory" onclick="renderHistoryTable(true)" class="px-4 py-1.5 text-xs font-mono bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg border border-amber-500/30 transition">➕ Tải thêm 30 kỳ lịch sử cũ</button>`;
+        tableContainer.parentElement.appendChild(btnWrapper);
+      } else {
+        moreBtn.style.display = (tbody.children.length >= appData.draws.length) ? 'none' : 'inline-block';
+      }
+    }
+
+    window.onload = () => {
+      window.scrollTo(0, 0);
+      lucide.createIcons();
+      loadStats();
+      startLiveCountdown();
+      startAutoPolling();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "keno-quant-pro",
+  "version": "2.0.0",
+  "description": "Hệ thống Phân tích Kỹ thuật Nến Keno TradingView & Định lượng Xác suất Real-time",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "keno",
+    "vietlott",
+    "tradingview",
+    "quant",
+    "candlestick",
+    "ict-smart-money"
+  ],
+  "author": "Antigravity",
+  "license": "MIT"
+}
