@@ -421,6 +421,86 @@
             <!-- TradingView Lightweight Charts Mount Target -->
             <div id="tvChartContainer" class="w-full h-full"></div>
 
+            <!-- FLOATING CANDLE INSPECTOR HUD (XEM GIÁ TỪNG CÂY NẾN & 20 SỐ TRÚNG THƯỞNG) -->
+            <div id="candleInspectorCard" class="absolute bottom-2 left-2 right-2 sm:right-auto sm:max-w-md z-30 bg-[#131722]/95 backdrop-blur-md border border-amber-500/50 rounded-xl shadow-[0_10px_40px_rgba(0,0,0,0.85)] p-2.5 sm:p-3 font-sans transition-all duration-200 select-none">
+              <!-- Top bar: Header & Time & Actions -->
+              <div class="flex items-center justify-between border-b border-[#2a2e39] pb-1.5 mb-2">
+                <div class="flex items-center space-x-2">
+                  <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                  </span>
+                  <span id="inspDrawId" class="text-amber-400 font-black text-sm sm:text-base tracking-wide font-mono">Kỳ #---</span>
+                  <span id="inspTime" class="text-slate-300 text-xs font-mono bg-[#1e222d] px-2 py-0.5 rounded border border-[#2a2e39]">--:--</span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <span id="inspHelpText" class="text-[10px] text-amber-300/80 font-mono hidden sm:inline">Chạm nến để xem kỳ khác</span>
+                  <button onclick="toggleInspectorCard(false)" class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-[#2a2e39] text-base font-bold transition" title="Đóng bảng chi tiết">&times;</button>
+                </div>
+              </div>
+
+              <!-- Row 1: Badges Lớn/Bé, Chẵn/Lẻ & Tổng Điểm -->
+              <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 text-xs font-bold">
+                <!-- Lớn / Bé -->
+                <div id="inspBadgeLonNho" class="px-2 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center space-x-1">
+                  <span class="text-[10px] text-slate-400">Kết quả:</span>
+                  <span id="inspLonNhoText">LỚN</span>
+                  <span id="inspLonNhoDetail" class="text-[10px] text-emerald-300 font-mono">(11 số)</span>
+                </div>
+                <!-- Chẵn / Lẻ -->
+                <div id="inspBadgeChanLe" class="px-2 py-1 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 flex items-center space-x-1">
+                  <span class="text-[10px] text-slate-400">Tỷ lệ:</span>
+                  <span id="inspChanLeText">CHẴN</span>
+                  <span id="inspChanLeDetail" class="text-[10px] text-purple-300 font-mono">(12C - 8L)</span>
+                </div>
+                <!-- Tổng điểm -->
+                <div class="px-2 py-1 rounded-lg bg-slate-800/90 border border-slate-700 text-amber-300 flex items-center space-x-1 ml-auto">
+                  <span class="text-[10px] text-slate-400">Tổng điểm:</span>
+                  <span id="inspSum" class="font-mono text-white font-black text-xs sm:text-sm">---</span>
+                  <span id="inspDelta" class="text-xs font-bold text-emerald-400 ml-1">---</span>
+                </div>
+              </div>
+
+              <!-- Row 2: 4 Mức Giá OHLC Chuẩn TradingView -->
+              <div class="grid grid-cols-4 gap-1 sm:gap-1.5 mb-2 text-center font-mono text-xs">
+                <div class="bg-[#1a1e29] p-1 sm:p-1.5 rounded-lg border border-[#2a2e39]">
+                  <div class="text-[9px] text-slate-400 uppercase tracking-wider">Mở (Open)</div>
+                  <div id="inspOpen" class="font-bold text-slate-200 mt-0.5 text-xs sm:text-sm">---</div>
+                </div>
+                <div class="bg-[#1a1e29] p-1 sm:p-1.5 rounded-lg border border-[#2a2e39]">
+                  <div class="text-[9px] text-emerald-400 uppercase tracking-wider">Cao (High)</div>
+                  <div id="inspHigh" class="font-bold text-emerald-400 mt-0.5 text-xs sm:text-sm">---</div>
+                </div>
+                <div class="bg-[#1a1e29] p-1 sm:p-1.5 rounded-lg border border-[#2a2e39]">
+                  <div class="text-[9px] text-rose-400 uppercase tracking-wider">Thấp (Low)</div>
+                  <div id="inspLow" class="font-bold text-rose-400 mt-0.5 text-xs sm:text-sm">---</div>
+                </div>
+                <div class="bg-[#1a1e29] p-1 sm:p-1.5 rounded-lg border border-[#2a2e39]">
+                  <div class="text-[9px] text-amber-400 uppercase tracking-wider">Đóng (Close)</div>
+                  <div id="inspClose" class="font-black text-amber-400 mt-0.5 text-xs sm:text-sm">---</div>
+                </div>
+              </div>
+
+              <!-- Row 3: 20 Con Số Trúng Giải (Lottery Balls) -->
+              <div>
+                <div class="flex items-center justify-between text-[10px] text-slate-400 mb-1">
+                  <span class="font-semibold text-slate-300 uppercase tracking-wide">20 Số Trúng Giải Kỳ Này:</span>
+                  <span class="text-[9px] text-slate-400 font-mono">
+                    <span class="text-cyan-400 font-bold">● 01-40</span> | <span class="text-amber-400 font-bold">● 41-80</span>
+                  </span>
+                </div>
+                <div id="inspBallsContainer" class="flex flex-wrap gap-1 items-center justify-center bg-[#0d1017] p-1.5 rounded-lg border border-[#2a2e39]/80 min-h-[46px]">
+                  <!-- 20 Balls rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating Toggle Button when Inspector is Closed -->
+            <button id="btnOpenInspector" onclick="toggleInspectorCard(true)" class="hidden absolute bottom-3.5 left-3.5 z-20 px-3 py-1.5 rounded-xl bg-[#131722]/90 hover:bg-[#1e222d] border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center space-x-1.5 shadow-2xl transition transform hover:scale-105 active:scale-95">
+              <i data-lucide="info" class="w-4 h-4 text-amber-400"></i>
+              <span>XEM GIÁ & 20 SỐ NẾN</span>
+            </button>
+
             <!-- Floating Jump to Realtime Button -->
             <button id="btnScrollToRealtime" onclick="scrollToRealtime()" class="hidden absolute bottom-3.5 right-3.5 z-30 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-2xl flex items-center space-x-1.5 border border-amber-300 transition transform hover:scale-105 active:scale-95">
               <i data-lucide="arrow-right-to-line" class="w-4 h-4"></i>
@@ -1286,20 +1366,69 @@
           }
         });
 
-        // TradingView Crosshair Move: Cập nhật Legend OHLC góc trên trái
+        // TradingView Crosshair Move: Cập nhật Legend OHLC góc trên trái & Inspector
         tvChart.subscribeCrosshairMove(param => {
           if (!param || !param.time || !param.seriesData || !candleSeries) {
-            if (appData && appData.tradingView && appData.tradingView.candles.length) {
+            if (appData && appData.tradingView && appData.tradingView.candles.length && !selectedCandlePinned) {
               const last = appData.tradingView.candles[appData.tradingView.candles.length - 1];
               updateLegend(last);
+              updateCandleInspector(last);
             }
             return;
           }
-          const data = param.seriesData.get(candleSeries);
-          if (data) {
-            updateLegend(data);
+          const fullCandle = findFullCandle(param);
+          if (fullCandle) {
+            updateLegend(fullCandle);
+            if (!selectedCandlePinned) {
+              updateCandleInspector(fullCandle);
+            }
           }
         });
+
+        // Click / Chạm vào Nến: Ghim cố định Inspector Card và hiển thị chi tiết nến
+        tvChart.subscribeClick(param => {
+          if (activeDrawingTool !== 'crosshair') return;
+          const fullCandle = findFullCandle(param);
+          if (fullCandle) {
+            selectedCandlePinned = true;
+            inspectCandle(fullCandle);
+          }
+        });
+
+        // Bổ sung touch & click listener trên container để đảm bảo 100% chạm trên điện thoại đều nhận diện được nến
+        const chartContainer = document.getElementById('tvChartContainer');
+        if (chartContainer && !chartContainer._touchBound) {
+          chartContainer._touchBound = true;
+          
+          const handleDirectTouch = (clientX) => {
+            if (activeDrawingTool !== 'crosshair' || !tvChart) return;
+            const rect = chartContainer.getBoundingClientRect();
+            const x = clientX - rect.left;
+            const timeScale = tvChart.timeScale();
+            const t = timeScale.coordinateToTime(x);
+            const logical = Math.round(timeScale.coordinateToLogical(x));
+            const candles = getActiveCandles();
+            let c = null;
+            if (t) c = candles.find(item => item.time === t);
+            if (!c && !isNaN(logical) && logical >= 0 && logical < candles.length) {
+              c = candles[logical];
+            }
+            if (c) {
+              selectedCandlePinned = true;
+              inspectCandle(c);
+            }
+          };
+
+          chartContainer.addEventListener('click', (e) => {
+            handleDirectTouch(e.clientX);
+          });
+
+          chartContainer.addEventListener('touchend', (e) => {
+            if (e.changedTouches && e.changedTouches.length === 1) {
+              handleDirectTouch(e.changedTouches[0].clientX);
+            }
+          });
+        }
 
         window.addEventListener('resize', () => {
           if (tvChart && container) {
@@ -1332,9 +1461,13 @@
       if (ma10Series) ma10Series.setData(ma10Data);
       if (ma20Series) ma20Series.setData(ma20Data);
 
-      // Cập nhật Legend với cây nến mới nhất
+      // Cập nhật Legend & Inspector với cây nến mới nhất
       if (activeCandles && activeCandles.length > 0) {
-        updateLegend(activeCandles[activeCandles.length - 1]);
+        const lastCandle = activeCandles[activeCandles.length - 1];
+        updateLegend(lastCandle);
+        if (!selectedCandlePinned) {
+          updateCandleInspector(lastCandle);
+        }
       }
 
       // Chỉ set vị trí Zoom ở LẦN ĐẦU TIÊN tải trang!
@@ -1349,8 +1482,252 @@
       updateICTAnalysis();
     }
 
+    // INSPECTOR & OHLC FULL DATA ENGINE
+    let selectedCandlePinned = false;
+
+    function findFullCandle(paramOrTime) {
+      const candles = getActiveCandles();
+      if (!candles || candles.length === 0) return null;
+      if (!paramOrTime) return candles[candles.length - 1];
+
+      // Nếu truyền vào thời gian Unix
+      if (typeof paramOrTime === 'number') {
+        const found = candles.find(c => c.time === paramOrTime);
+        if (found) return found;
+      }
+
+      // Nếu truyền vào param của Lightweight Charts
+      if (typeof paramOrTime === 'object') {
+        if (paramOrTime.time) {
+          const found = candles.find(c => c.time === paramOrTime.time);
+          if (found) return found;
+        }
+        if (paramOrTime.seriesData && candleSeries) {
+          const sData = paramOrTime.seriesData.get(candleSeries);
+          if (sData && sData.time) {
+            const found = candles.find(c => c.time === sData.time);
+            if (found) return found;
+          }
+        }
+        if (paramOrTime.point && tvChart) {
+          const timeScale = tvChart.timeScale();
+          const t = timeScale.coordinateToTime(paramOrTime.point.x);
+          if (t) {
+            const found = candles.find(c => c.time === t);
+            if (found) return found;
+          }
+          const logical = Math.round(timeScale.coordinateToLogical(paramOrTime.point.x));
+          if (!isNaN(logical) && logical >= 0 && logical < candles.length) {
+            return candles[logical];
+          }
+        }
+      }
+      return null;
+    }
+
+    function getEnrichedCandle(candle) {
+      if (!candle) return null;
+      const enriched = { ...candle };
+
+      // Tìm kỳ quay tương ứng trong appData.draws nếu nến thiếu danh sách số
+      let draw = null;
+      if (appData && appData.draws) {
+        const cleanDrawId = String(candle.drawId || '').replace(/^#/, '');
+        draw = appData.draws.find(d => String(d.drawId) === cleanDrawId);
+      }
+
+      let numbers = candle.numbers || (draw && draw.numbers) || [];
+      if (typeof numbers === 'string') {
+        try { numbers = JSON.parse(numbers); } catch (e) { numbers = []; }
+      }
+      enriched.numbers = numbers.map(n => parseInt(n, 10)).filter(n => !isNaN(n)).sort((a, b) => a - b);
+
+      enriched.close = candle.close;
+      enriched.open = candle.open;
+      enriched.high = candle.high;
+      enriched.low = candle.low;
+      enriched.sum = candle.sum || candle.close;
+      enriched.delta = enriched.close - enriched.open;
+      enriched.deltaPercent = enriched.open ? ((enriched.delta / enriched.open) * 100).toFixed(2) : '0.00';
+
+      if (enriched.numbers.length > 0) {
+        enriched.evenCount = enriched.numbers.filter(n => n % 2 === 0).length;
+        enriched.oddCount = enriched.numbers.length - enriched.evenCount;
+        enriched.bigCount = enriched.numbers.filter(n => n > 40).length;
+        enriched.smallCount = enriched.numbers.length - enriched.bigCount;
+      } else {
+        enriched.evenCount = candle.evenCount || 10;
+        enriched.oddCount = candle.oddCount || 10;
+        enriched.bigCount = candle.bigCount || (enriched.close > 810 ? 11 : 9);
+        enriched.smallCount = 20 - enriched.bigCount;
+      }
+
+      // Đánh giá kết quả Lớn / Bé / Hòa (chuẩn Vietlott Keno 810 điểm)
+      if (enriched.close > 810) {
+        enriched.lonNhoText = 'LỚN';
+        enriched.lonNhoDetail = `(${enriched.bigCount} số > 40)`;
+        enriched.lonNhoClass = 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400';
+      } else if (enriched.close < 810) {
+        enriched.lonNhoText = 'BÉ';
+        enriched.lonNhoDetail = `(${enriched.smallCount} số ≤ 40)`;
+        enriched.lonNhoClass = 'bg-rose-500/20 border-rose-500/40 text-rose-400';
+      } else {
+        enriched.lonNhoText = 'HÒA';
+        enriched.lonNhoDetail = '(10L - 10N)';
+        enriched.lonNhoClass = 'bg-amber-500/20 border-amber-500/40 text-amber-300';
+      }
+
+      // Đánh giá Chẵn / Lẻ
+      if (enriched.evenCount > 10) {
+        enriched.chanLeText = 'CHẴN';
+        enriched.chanLeDetail = `(${enriched.evenCount}C - ${enriched.oddCount}L)`;
+        enriched.chanLeClass = 'bg-purple-500/20 border-purple-500/40 text-purple-300';
+      } else if (enriched.evenCount < 10) {
+        enriched.chanLeText = 'LẺ';
+        enriched.chanLeDetail = `(${enriched.oddCount}L - ${enriched.evenCount}C)`;
+        enriched.chanLeClass = 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300';
+      } else {
+        enriched.chanLeText = 'HÒA';
+        enriched.chanLeDetail = '(10C - 10L)';
+        enriched.chanLeClass = 'bg-amber-500/20 border-amber-500/40 text-amber-300';
+      }
+
+      return enriched;
+    }
+
+    function updateCandleInspector(candleOrParam) {
+      const fullCandle = findFullCandle(candleOrParam) || candleOrParam;
+      if (!fullCandle) return;
+      const d = getEnrichedCandle(fullCandle);
+      if (!d) return;
+
+      const card = document.getElementById('candleInspectorCard');
+      const btnOpen = document.getElementById('btnOpenInspector');
+      if (card && card.classList.contains('hidden') && !btnOpen?.classList.contains('hidden')) {
+        // Nếu người dùng đã chủ động bấm đóng card, không tự mở lại khi chỉ rê chuột
+        return;
+      }
+
+      const elDraw = document.getElementById('inspDrawId');
+      const elTime = document.getElementById('inspTime');
+      const elBadgeLonNho = document.getElementById('inspBadgeLonNho');
+      const elLonNhoText = document.getElementById('inspLonNhoText');
+      const elLonNhoDetail = document.getElementById('inspLonNhoDetail');
+      const elBadgeChanLe = document.getElementById('inspBadgeChanLe');
+      const elChanLeText = document.getElementById('inspChanLeText');
+      const elChanLeDetail = document.getElementById('inspChanLeDetail');
+      const elSum = document.getElementById('inspSum');
+      const elDelta = document.getElementById('inspDelta');
+      const elOpen = document.getElementById('inspOpen');
+      const elHigh = document.getElementById('inspHigh');
+      const elLow = document.getElementById('inspLow');
+      const elClose = document.getElementById('inspClose');
+      const ballsContainer = document.getElementById('inspBallsContainer');
+
+      const drawNo = d.drawId ? (d.drawId.startsWith('#') ? d.drawId : '#' + d.drawId) : '#---';
+      if (elDraw) elDraw.textContent = `Kỳ ${drawNo}`;
+
+      if (elTime && d.time) {
+        const dt = new Date(d.time * 1000);
+        const hh = String(dt.getHours()).padStart(2, '0');
+        const mm = String(dt.getMinutes()).padStart(2, '0');
+        const dd = String(dt.getDate()).padStart(2, '0');
+        const mo = String(dt.getMonth() + 1).padStart(2, '0');
+        elTime.textContent = `${hh}:${mm} (${dd}/${mo})`;
+      }
+
+      if (elBadgeLonNho) elBadgeLonNho.className = `px-2 py-1 rounded-lg border flex items-center space-x-1 ${d.lonNhoClass}`;
+      if (elLonNhoText) elLonNhoText.textContent = d.lonNhoText;
+      if (elLonNhoDetail) elLonNhoDetail.textContent = d.lonNhoDetail;
+
+      if (elBadgeChanLe) elBadgeChanLe.className = `px-2 py-1 rounded-lg border flex items-center space-x-1 ${d.chanLeClass}`;
+      if (elChanLeText) elChanLeText.textContent = d.chanLeText;
+      if (elChanLeDetail) elChanLeDetail.textContent = d.chanLeDetail;
+
+      if (elSum) elSum.textContent = `${d.sum} đ`;
+      if (elDelta) {
+        elDelta.textContent = (d.delta >= 0 ? '+' : '') + d.delta + ' đ (' + (d.delta >= 0 ? '+' : '') + d.deltaPercent + '%)';
+        elDelta.className = d.delta >= 0 ? 'text-xs font-bold text-emerald-400 ml-1' : 'text-xs font-bold text-red-400 ml-1';
+      }
+
+      if (elOpen) elOpen.textContent = d.open;
+      if (elHigh) elHigh.textContent = d.high;
+      if (elLow) elLow.textContent = d.low;
+      if (elClose) elClose.textContent = d.close;
+
+      if (ballsContainer) {
+        if (d.numbers && d.numbers.length > 0) {
+          ballsContainer.innerHTML = d.numbers.map(num => {
+            const n = parseInt(num, 10);
+            const isBig = n > 40;
+            const bgClass = isBig 
+              ? 'bg-amber-950/90 text-amber-300 border border-amber-500/50 shadow-[0_0_8px_rgba(245,158,11,0.2)]' 
+              : 'bg-cyan-950/90 text-cyan-300 border border-cyan-500/50 shadow-[0_0_8px_rgba(6,182,212,0.2)]';
+            const numStr = String(n).padStart(2, '0');
+            return `<span class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center font-mono font-black text-[11px] sm:text-xs ${bgClass}">${numStr}</span>`;
+          }).join('');
+        } else {
+          ballsContainer.innerHTML = `<span class="text-xs text-slate-500 italic py-1">Kỳ này đang tính toán hoặc thiếu chi tiết bóng</span>`;
+        }
+      }
+
+      if (card && card.classList.contains('hidden')) {
+        card.classList.remove('hidden');
+        if (btnOpen) btnOpen.classList.add('hidden');
+      }
+    }
+
+    function toggleInspectorCard(show) {
+      const card = document.getElementById('candleInspectorCard');
+      const btnOpen = document.getElementById('btnOpenInspector');
+      if (show) {
+        if (card) card.classList.remove('hidden');
+        if (btnOpen) btnOpen.classList.add('hidden');
+        const activeCandles = getActiveCandles();
+        if (activeCandles && activeCandles.length > 0) {
+          updateCandleInspector(activeCandles[activeCandles.length - 1]);
+        }
+      } else {
+        if (card) card.classList.add('hidden');
+        if (btnOpen) {
+          btnOpen.classList.remove('hidden');
+          if (window.lucide) lucide.createIcons();
+        }
+      }
+    }
+
+    function inspectCandle(candle) {
+      selectedCandlePinned = true;
+      updateCandleInspector(candle);
+      updateLegend(candle);
+      if (navigator && navigator.vibrate) {
+        try { navigator.vibrate(25); } catch (e) {}
+      }
+    }
+
+    function focusCandleOnChart(drawId) {
+      if (!drawId) return;
+      const cleanDrawId = String(drawId).replace(/^#/, '');
+      const candles = getActiveCandles();
+      if (!candles || candles.length === 0) return;
+      const idx = candles.findIndex(c => String(c.drawId || '').replace(/^#/, '') === cleanDrawId);
+      if (idx !== -1 && tvChart) {
+        const targetCandle = candles[idx];
+        tvChart.timeScale().scrollToPosition(- (candles.length - 1 - idx), false);
+        inspectCandle(targetCandle);
+        const viewport = document.getElementById('chartViewport');
+        if (viewport) {
+          viewport.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+
     function updateLegend(candle) {
-      if (!candle) return;
+      const fullCandle = findFullCandle(candle) || candle;
+      if (!fullCandle) return;
+      const d = getEnrichedCandle(fullCandle);
+      if (!d) return;
+
       const elOpen = document.getElementById('lgOpen');
       const elHigh = document.getElementById('lgHigh');
       const elLow = document.getElementById('lgLow');
@@ -1358,28 +1735,29 @@
       const elDelta = document.getElementById('lgDelta');
       const elInfo = document.getElementById('lgDrawInfo');
 
-      if (elOpen) elOpen.textContent = candle.open;
-      if (elHigh) elHigh.textContent = candle.high;
-      if (elLow) elLow.textContent = candle.low;
-      if (elClose) elClose.textContent = candle.close;
+      if (elOpen) elOpen.textContent = d.open;
+      if (elHigh) elHigh.textContent = d.high;
+      if (elLow) elLow.textContent = d.low;
+      if (elClose) elClose.textContent = d.close;
 
-      const delta = candle.close - candle.open;
       if (elDelta) {
-        elDelta.textContent = (delta >= 0 ? '+' : '') + delta + ' đ';
-        elDelta.className = delta >= 0 ? 'text-emerald-400 font-bold ml-1' : 'text-red-400 font-bold ml-1';
+        elDelta.textContent = (d.delta >= 0 ? '+' : '') + d.delta + ' đ (' + (d.delta >= 0 ? '+' : '') + d.deltaPercent + '%)';
+        elDelta.className = d.delta >= 0 ? 'text-emerald-400 font-bold ml-1' : 'text-red-400 font-bold ml-1';
       }
       if (elInfo) {
         let timeStr = '';
-        if (candle.time) {
-          const d = new Date(candle.time * 1000);
-          const hh = String(d.getHours()).padStart(2, '0');
-          const mm = String(d.getMinutes()).padStart(2, '0');
-          const dd = String(d.getDate()).padStart(2, '0');
-          const mo = String(d.getMonth() + 1).padStart(2, '0');
+        if (d.time) {
+          const dt = new Date(d.time * 1000);
+          const hh = String(dt.getHours()).padStart(2, '0');
+          const mm = String(dt.getMinutes()).padStart(2, '0');
+          const dd = String(dt.getDate()).padStart(2, '0');
+          const mo = String(dt.getMonth() + 1).padStart(2, '0');
           timeStr = ` • ${hh}:${mm} (${dd}/${mo})`;
         }
-        const drawNo = candle.drawId ? (candle.drawId.startsWith('#') ? candle.drawId : '#' + candle.drawId) : '';
-        elInfo.textContent = `Kỳ ${drawNo}${timeStr}`;
+        const drawNo = d.drawId ? (d.drawId.startsWith('#') ? d.drawId : '#' + d.drawId) : '';
+        const badgeLonNho = d.lonNhoText ? `<span class="px-1.5 py-0.5 rounded text-[10px] ${d.lonNhoClass} font-bold ml-1">${d.lonNhoText}</span>` : '';
+        const badgeChanLe = d.chanLeText ? `<span class="px-1.5 py-0.5 rounded text-[10px] ${d.chanLeClass} font-bold ml-1">${d.chanLeText}</span>` : '';
+        elInfo.innerHTML = `<span class="text-amber-400 font-bold">Kỳ ${drawNo}</span>${timeStr} ${badgeLonNho} ${badgeChanLe}`;
       }
     }
 
@@ -2691,11 +3069,13 @@
 
       slice.forEach(d => {
         const tr = document.createElement('tr');
-        tr.className = 'border-b border-brand-border/30 hover:bg-brand-cardHover/40';
+        tr.className = 'border-b border-brand-border/30 hover:bg-amber-500/10 cursor-pointer transition';
+        tr.title = `Bấm để xem nến kỳ #${d.drawId} trên biểu đồ`;
+        tr.onclick = () => focusCandleOnChart(d.drawId);
         const balls = d.numbers.map(n => `<span class="ball-sm bg-slate-800 text-slate-200 border border-slate-700 m-0.5">${n}</span>`).join('');
         tr.innerHTML = `
           <td class="p-2.5">
-            <span class="text-amber-400 font-bold">#${d.drawId}</span>
+            <span class="text-amber-400 font-bold hover:underline">#${d.drawId}</span>
             <div class="text-[10px] text-slate-500">${d.date}</div>
           </td>
           <td class="p-2.5 flex flex-wrap max-w-md">${balls}</td>

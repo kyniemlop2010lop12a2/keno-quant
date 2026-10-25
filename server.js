@@ -175,7 +175,10 @@ function generateTradingViewCandles(draws) {
       low,
       close,
       sum,
-      volume: nums.filter(n => n % 2 === 0).length
+      volume: nums.filter(n => n % 2 === 0).length,
+      numbers: d.numbers,
+      chanLe: d.chanLe,
+      lonNho: d.lonNho
     });
   });
 
