@@ -282,7 +282,7 @@
         </div>
 
         <!-- MAIN TRADINGVIEW WORKSPACE: LEFT DRAWING TOOLS + CHART CANVAS -->
-        <div id="chartContainerParent" class="relative flex w-full h-[360px] sm:h-[400px] lg:h-[440px] bg-[#131722] overflow-hidden">
+        <div id="chartContainerParent" class="relative flex w-full h-[360px] sm:h-[400px] lg:h-[440px] bg-[#131722] overflow-hidden" style="min-height: 380px;">
           
           <!-- LEFT DRAWING TOOLBAR (THANH CÔNG CỤ VẼ CHUẨN TRADINGVIEW) -->
           <div class="w-9 bg-[#1e222d] border-r border-[#2a2e39] flex flex-col items-center py-1.5 space-y-1 z-20 flex-shrink-0 select-none">
@@ -337,7 +337,7 @@
           </div>
 
           <!-- CHART & DRAWING CANVAS VIEWPORT -->
-          <div id="chartViewport" class="relative flex-1 h-full overflow-hidden">
+          <div id="chartViewport" class="relative flex-1 h-full overflow-hidden" style="min-height: 380px;">
             
             <!-- FLOATING TRADINGVIEW OHLC LEGEND (GÓC TRÊN TRÁI) -->
             <div id="tvLegend" class="absolute top-2 left-3 z-20 pointer-events-none flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] bg-[#131722] px-2.5 py-1 rounded border border-[#2a2e39]/60 shadow-lg">
@@ -419,7 +419,7 @@
             <canvas id="drawingCanvas" class="absolute inset-0 z-10 w-full h-full pointer-events-none"></canvas>
 
             <!-- TradingView Lightweight Charts Mount Target -->
-            <div id="tvChartContainer" class="w-full h-full"></div>
+            <div id="tvChartContainer" class="w-full h-full" style="min-height: 380px;"></div>
 
             <!-- Floating Jump to Realtime Button -->
             <button id="btnScrollToRealtime" onclick="scrollToRealtime()" class="hidden absolute bottom-3.5 right-3.5 z-30 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-2xl flex items-center space-x-1.5 border border-amber-300 transition transform hover:scale-105 active:scale-95">
@@ -1075,10 +1075,13 @@
       }, 2000);
     }
 
+    let statsRetryCount = 0;
     async function loadStats(isSilent = false) {
       try {
         const res = await fetch('/api/stats');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
+        statsRetryCount = 0;
         
         const isFirstLoad = !appData;
         const hasNewDraw = currentKnownDrawId && data.latestDraw && data.latestDraw.drawId !== currentKnownDrawId;
@@ -1100,6 +1103,10 @@
         }
       } catch (e) {
         if (!isSilent) console.error("Load failed:", e);
+        if (!appData && statsRetryCount < 10) {
+          statsRetryCount++;
+          setTimeout(() => loadStats(false), 2000);
+        }
       }
     }
 
@@ -1162,6 +1169,11 @@
     // TRADINGVIEW ICT CANDLESTICK CHART
     function renderTradingViewChart() {
       if (!appData || !appData.tradingView) return;
+      if (typeof LightweightCharts === 'undefined') {
+        console.warn('LightweightCharts chưa tải xong, đang đợi...');
+        setTimeout(renderTradingViewChart, 150);
+        return;
+      }
       const tvData = appData.tradingView;
 
       const container = document.getElementById('tvChartContainer');
@@ -1169,9 +1181,14 @@
 
       if (!tvChart) {
         container.innerHTML = '';
+        const parentH = container.parentElement ? container.parentElement.clientHeight : 0;
+        const initialH = Math.max(380, container.clientHeight, parentH);
+        const parentW = container.parentElement ? container.parentElement.clientWidth : 0;
+        const initialW = Math.max(300, container.clientWidth, parentW);
+
         tvChart = LightweightCharts.createChart(container, {
-          width: container.clientWidth,
-          height: container.clientHeight,
+          width: initialW,
+          height: initialH,
           layout: {
             background: { color: '#131722' },
             textColor: '#94a3b8',
@@ -1395,7 +1412,6 @@
         });
 
         // Bổ sung touch & click listener trên viewport để đảm bảo 100% chạm trên điện thoại đều nhận diện được nến
-        const chartViewport = document.getElementById('chartViewport');
         if (chartViewport && !chartViewport._touchBound) {
           chartViewport._touchBound = true;
           
@@ -1428,17 +1444,27 @@
           }, { passive: true });
         }
 
-        window.addEventListener('resize', () => {
-          if (tvChart && container) {
-            tvChart.resize(container.clientWidth, container.clientHeight);
+        const updateChartSize = () => {
+          if (!tvChart || !container) return;
+          const w = container.clientWidth || (container.parentElement ? container.parentElement.clientWidth : 0);
+          const h = container.clientHeight || (container.parentElement ? container.parentElement.clientHeight : 0);
+          if (w > 50 && h > 50) {
+            tvChart.resize(w, h);
             const canvas = document.getElementById('drawingCanvas');
             if (canvas) {
-              canvas.width = container.clientWidth;
-              canvas.height = container.clientHeight;
+              canvas.width = w;
+              canvas.height = h;
             }
             redrawCanvas();
           }
-        });
+        };
+
+        window.addEventListener('resize', updateChartSize);
+
+        if (window.ResizeObserver && container.parentElement) {
+          const ro = new ResizeObserver(() => updateChartSize());
+          ro.observe(container.parentElement);
+        }
 
         // Khởi động lớp vẽ Canvas tương tác
         if (!canvasInitialized) {
@@ -1672,12 +1698,6 @@
     }
 
     function inspectCandle(candle) {
-      updateCandleInspector(candle);
-      updateLegend(candle);
-      if (navigator && navigator.vibrate) {
-        try { navigator.vibrate(25); } catch (e) {}
-      }
-    }
       updateCandleInspector(candle);
       updateLegend(candle);
       if (navigator && navigator.vibrate) {
@@ -3077,13 +3097,25 @@
       }
     }
 
-    window.onload = () => {
-      window.scrollTo(0, 0);
-      lucide.createIcons();
+    let _appInitialized = false;
+    function initApp() {
+      if (_appInitialized) return;
+      _appInitialized = true;
+      try { window.scrollTo(0, 0); } catch (e) {}
+      try { if (window.lucide && typeof lucide.createIcons === 'function') lucide.createIcons(); } catch (e) {}
       loadStats();
       startLiveCountdown();
       startAutoPolling();
-    };
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      setTimeout(initApp, 10);
+    } else {
+      document.addEventListener('DOMContentLoaded', initApp);
+      window.addEventListener('load', initApp);
+    }
+    // Fallback timer đảm bảo trang luôn luôn kích hoạt dù CDN tải chậm
+    setTimeout(initApp, 400);
   </script>
 </body>
 </html>
