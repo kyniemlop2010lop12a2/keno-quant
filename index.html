@@ -81,8 +81,11 @@
       display: inline-flex;
     }
 
-    /* TỰ ĐỘNG CÂN CHỈNH VỪA KHÍT MÀN HÌNH 720p / 768p / LAPTOP (KHÔNG BỊ CUỘN TRANG) */
-    @media (max-height: 768px) {
+    /* TỰ ĐỘNG CÂN CHỈNH CHO MÀN HÌNH ĐIỆN THOẠI & LAPTOP */
+    @media (max-width: 767px) {
+      body { padding-bottom: 76px !important; }
+    }
+    @media (max-height: 768px) and (min-width: 768px) {
       body { padding-bottom: 0px !important; }
       header { padding-top: 4px !important; padding-bottom: 4px !important; }
       nav > div { padding-top: 2px !important; padding-bottom: 2px !important; }
@@ -147,30 +150,30 @@
     </div>
   </header>
 
-  <!-- DESKTOP / TABLET TABS -->
-  <nav class="hidden md:block border-b border-brand-border/60 bg-brand-card/40">
-    <div class="max-w-[1400px] mx-auto flex space-x-1 px-4 py-1.5 text-xs font-semibold overflow-x-auto no-scrollbar">
-      <button onclick="switchTab('chart')" id="dtab-chart" class="dtab-btn px-3 py-1.5 rounded-md text-amber-400 bg-amber-500/10 border border-amber-500/30 flex items-center gap-1.5">
+  <!-- TOP MAIN NAVIGATION TABS (DESKTOP & MOBILE RESPONSIVE SCROLLABLE) -->
+  <nav class="sticky top-0 z-40 border-b border-brand-border/80 bg-[#0d111a]/95 backdrop-blur-md shadow-md">
+    <div class="max-w-[1400px] mx-auto flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-4 py-1.5 text-xs font-semibold overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
+      <button onclick="switchTab('chart')" id="dtab-chart" class="dtab-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-amber-400 bg-amber-500/10 border border-amber-500/30 flex items-center gap-1.5 flex-shrink-0 transition active:scale-95">
         <i data-lucide="candlestick-chart" class="w-3.5 h-3.5"></i>
         <span>1. Biểu Đồ Nến ICT (Clean)</span>
       </button>
-      <button onclick="switchTab('predict')" id="dtab-predict" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+      <button onclick="switchTab('predict')" id="dtab-predict" class="dtab-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 flex-shrink-0 transition active:scale-95">
         <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
         <span>2. Dự Báo Kỳ Tới (%)</span>
       </button>
-      <button onclick="switchTab('matrix')" id="dtab-matrix" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+      <button onclick="switchTab('matrix')" id="dtab-matrix" class="dtab-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 flex-shrink-0 transition active:scale-95">
         <i data-lucide="grid" class="w-3.5 h-3.5"></i>
         <span>3. Ma Trận 80 Bóng</span>
       </button>
-      <button onclick="switchTab('wheel')" id="dtab-wheel" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+      <button onclick="switchTab('wheel')" id="dtab-wheel" class="dtab-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 flex-shrink-0 transition active:scale-95">
         <i data-lucide="ticket" class="w-3.5 h-3.5"></i>
         <span>4. Xưởng Dàn Steiner</span>
       </button>
-      <button onclick="switchTab('overlap')" id="dtab-overlap" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+      <button onclick="switchTab('overlap')" id="dtab-overlap" class="dtab-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 flex-shrink-0 transition active:scale-95">
         <i data-lucide="layers" class="w-3.5 h-3.5"></i>
         <span>5. Độ Trùng 45 Tỷ Cặp</span>
       </button>
-      <button onclick="switchTab('history')" id="dtab-history" class="dtab-btn px-3 py-1.5 rounded-md text-slate-400 hover:text-white flex items-center gap-1.5">
+      <button onclick="switchTab('history')" id="dtab-history" class="dtab-btn px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-400 hover:text-white flex items-center gap-1.5 flex-shrink-0 transition active:scale-95">
         <i data-lucide="history" class="w-3.5 h-3.5"></i>
         <span>6. Kho Dữ Liệu</span>
       </button>
@@ -253,6 +256,12 @@
               <span class="hidden md:inline">Căn Vô Khung</span>
             </button>
 
+            <!-- KILL ZONE INDICATOR TOGGLE (CHỈ BÁO KILL ZONE & GIÁ HỢP LÝ ICT) -->
+            <button onclick="toggleKillZone()" id="btnKillZone" class="px-2 py-0.5 rounded bg-amber-500/20 border border-amber-400 text-amber-300 text-[10px] font-semibold flex items-center gap-1 transition shadow-sm" title="Bật/Tắt Chỉ Báo Kill Zone & Vùng Giá Hợp Lý OTE">
+              <i data-lucide="crosshair" class="w-3 h-3 text-amber-400"></i>
+              <span id="killZoneBtnText">🎯 Kill Zone</span>
+            </button>
+
             <!-- AUTO ICT / SMC TOGGLE (Tự động vẽ FVG & BSL/SSL) -->
             <button onclick="toggleAutoICT()" id="btnAutoICT" class="px-2 py-0.5 rounded bg-[#131722] border border-[#2a2e39] text-slate-300 hover:text-white text-[10px] font-semibold flex items-center gap-1 transition" title="Tự động nhận diện & vẽ vùng FVG, BSL, SSL, Quét thanh khoản (ICT / SMC)">
               <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i>
@@ -282,10 +291,10 @@
         </div>
 
         <!-- MAIN TRADINGVIEW WORKSPACE: LEFT DRAWING TOOLS + CHART CANVAS -->
-        <div id="chartContainerParent" class="relative flex w-full h-[360px] sm:h-[400px] lg:h-[440px] bg-[#131722] overflow-hidden" style="min-height: 380px;">
+        <div id="chartContainerParent" class="relative flex w-full h-[290px] sm:h-[390px] lg:h-[440px] bg-[#131722] overflow-hidden">
           
-          <!-- LEFT DRAWING TOOLBAR (THANH CÔNG CỤ VẼ CHUẨN TRADINGVIEW) -->
-          <div class="w-9 bg-[#1e222d] border-r border-[#2a2e39] flex flex-col items-center py-1.5 space-y-1 z-20 flex-shrink-0 select-none">
+          <!-- LEFT DRAWING TOOLBAR (THANH CÔNG CỤ VẼ CHUẨN TRADINGVIEW - ẨN TRÊN MOBILE ĐỂ TỐI ĐA CHIỀU RỘNG NẾN) -->
+          <div class="hidden sm:flex w-9 bg-[#1e222d] border-r border-[#2a2e39] flex-col items-center py-1.5 space-y-1 z-20 flex-shrink-0 select-none">
             
             <!-- Tool: Crosshair -->
             <button onclick="setDrawingTool('crosshair')" id="tool-crosshair" class="tool-btn active w-7 h-7 rounded-md flex items-center justify-center text-amber-400 bg-[#2a2e39] hover:bg-[#363a45] transition" title="Con trỏ Crosshair (Xem nến / Cuộn lịch sử)">
@@ -337,10 +346,10 @@
           </div>
 
           <!-- CHART & DRAWING CANVAS VIEWPORT -->
-          <div id="chartViewport" class="relative flex-1 h-full overflow-hidden" style="min-height: 380px;">
+          <div id="chartViewport" class="relative flex-1 h-full overflow-hidden">
             
             <!-- FLOATING TRADINGVIEW OHLC LEGEND (GÓC TRÊN TRÁI) -->
-            <div id="tvLegend" class="absolute top-2 left-3 z-20 pointer-events-none flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] bg-[#131722] px-2.5 py-1 rounded border border-[#2a2e39]/60 shadow-lg">
+            <div id="tvLegend" class="absolute top-2 left-2 sm:left-3 z-20 pointer-events-none flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-[10px] sm:text-[11px] bg-[#131722]/90 backdrop-blur px-2 sm:px-2.5 py-1 rounded border border-[#2a2e39]/60 shadow-lg max-w-[calc(100%-16px)]">
               <span class="text-white font-bold">VIETLOTT:KENO</span>
               <span class="text-slate-400">10M</span>
               <span id="legendOHLC" class="text-slate-300">
@@ -354,8 +363,8 @@
               <span class="text-xs text-amber-300 font-semibold" id="lgDrawInfo">Kỳ #---</span>
             </div>
 
-            <!-- FLOATING QUICK TRADINGVIEW DRAWING TOOLBAR (GÓC TRÊN PHẢI CHUẨN TRADINGVIEW) -->
-            <div id="quickDrawingBar" class="absolute top-2 right-3 z-20 flex items-center bg-[#1e222d] px-1.5 py-0.5 rounded-lg border border-[#2a2e39] shadow-2xl gap-0.5 sm:gap-1 font-mono text-[11px] select-none">
+            <!-- FLOATING QUICK TRADINGVIEW DRAWING TOOLBAR (CHỈ HIỂN THỊ TRÊN MÀN HÌNH LỚN ĐỂ KHÔNG CHE NẾN TRÊN ĐIỆN THOẠI) -->
+            <div id="quickDrawingBar" class="hidden md:flex absolute top-2 right-3 z-20 items-center bg-[#1e222d] px-1.5 py-0.5 rounded-lg border border-[#2a2e39] shadow-2xl gap-0.5 sm:gap-1 font-mono text-[11px] select-none">
               <!-- Con trỏ -->
               <button onclick="setDrawingTool('crosshair')" id="qtool-crosshair" class="qtool-btn active px-2 py-1 rounded flex items-center gap-1 text-amber-400 bg-[#2a2e39] hover:bg-[#363a45] transition" title="Con trỏ Crosshair (Xem nến / Cuộn biểu đồ)">
                 <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
@@ -419,7 +428,7 @@
             <canvas id="drawingCanvas" class="absolute inset-0 z-10 w-full h-full pointer-events-none"></canvas>
 
             <!-- TradingView Lightweight Charts Mount Target -->
-            <div id="tvChartContainer" class="w-full h-full" style="min-height: 380px;"></div>
+            <div id="tvChartContainer" class="w-full h-full"></div>
 
             <!-- Floating Jump to Realtime Button -->
             <button id="btnScrollToRealtime" onclick="scrollToRealtime()" class="hidden absolute bottom-3.5 right-3.5 z-30 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shadow-2xl flex items-center space-x-1.5 border border-amber-300 transition transform hover:scale-105 active:scale-95">
@@ -458,6 +467,10 @@
               <span id="inspDrawId" class="text-amber-400 font-black text-base sm:text-lg tracking-wide font-mono">Kỳ #---</span>
               <span id="inspTime" class="text-slate-300 text-xs font-mono bg-[#1e222d] px-2 py-0.5 rounded border border-[#2a2e39]">--:-- (--)</span>
               <span id="inspSelectionTag" class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">Đang xem nến này</span>
+              <span id="inspKillZoneTag" class="text-[11px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded flex items-center gap-1 font-mono">
+                <i data-lucide="crosshair" class="w-3 h-3 text-amber-400"></i>
+                <span id="inspKillZoneText">🎯 Kill Zone: TỐI</span>
+              </span>
             </div>
             
             <div class="flex items-center space-x-2">
@@ -469,70 +482,158 @@
           </div>
 
           <!-- Row 1: Badges Lớn/Bé, Chẵn/Lẻ, Tổng Điểm & Gợi ý chạm nến -->
-          <div class="flex flex-wrap items-center gap-2 mb-2.5 text-xs font-bold">
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 text-xs font-bold">
             <!-- Lớn / Bé -->
-            <div id="inspBadgeLonNho" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center space-x-1.5">
-              <span class="text-[10px] text-slate-400 uppercase">Kết quả:</span>
-              <span id="inspLonNhoText" class="text-sm font-extrabold">LỚN</span>
-              <span id="inspLonNhoDetail" class="text-[11px] text-emerald-300 font-mono">(11 số > 40)</span>
+            <div id="inspBadgeLonNho" class="px-2 sm:px-2.5 py-1 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center space-x-1 sm:space-x-1.5">
+              <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase">Kết quả:</span>
+              <span id="inspLonNhoText" class="text-xs sm:text-sm font-extrabold">LỚN</span>
+              <span id="inspLonNhoDetail" class="text-[10px] sm:text-[11px] text-emerald-300 font-mono">(11 số > 40)</span>
             </div>
             <!-- Chẵn / Lẻ -->
-            <div id="inspBadgeChanLe" class="px-2.5 py-1 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 flex items-center space-x-1.5">
-              <span class="text-[10px] text-slate-400 uppercase">Tỷ lệ:</span>
-              <span id="inspChanLeText" class="text-sm font-extrabold">CHẴN</span>
-              <span id="inspChanLeDetail" class="text-[11px] text-purple-300 font-mono">(12C - 8L)</span>
+            <div id="inspBadgeChanLe" class="px-2 sm:px-2.5 py-1 rounded-lg bg-purple-500/20 border border-purple-500/40 text-purple-300 flex items-center space-x-1 sm:space-x-1.5">
+              <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase">Tỷ lệ:</span>
+              <span id="inspChanLeText" class="text-xs sm:text-sm font-extrabold">CHẴN</span>
+              <span id="inspChanLeDetail" class="text-[10px] sm:text-[11px] text-purple-300 font-mono">(12C - 8L)</span>
             </div>
             <!-- Tổng điểm -->
-            <div class="px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-amber-300 flex items-center space-x-1.5">
-              <span class="text-[10px] text-slate-400 uppercase">Tổng điểm:</span>
-              <span id="inspSum" class="font-mono text-white font-black text-sm sm:text-base">---</span>
-              <span id="inspDelta" class="text-xs font-bold text-emerald-400 ml-1">---</span>
+            <div class="px-2 sm:px-2.5 py-1 rounded-lg bg-slate-800 border border-slate-700 text-amber-300 flex items-center space-x-1 sm:space-x-1.5">
+              <span class="text-[9px] sm:text-[10px] text-slate-400 uppercase">Tổng điểm:</span>
+              <span id="inspSum" class="font-mono text-white font-black text-xs sm:text-base">---</span>
+              <span id="inspDelta" class="text-[10px] sm:text-xs font-bold text-emerald-400 ml-0.5 sm:ml-1">---</span>
             </div>
 
             <!-- Hint: Chạm nến -->
-            <div class="text-[11px] text-slate-400 font-medium ml-auto flex items-center gap-1 bg-[#1a1e29] px-2.5 py-1 rounded-lg border border-[#2a2e39]">
+            <div class="hidden sm:flex text-[11px] text-slate-400 font-medium ml-auto items-center gap-1 bg-[#1a1e29] px-2.5 py-1 rounded-lg border border-[#2a2e39]">
               <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 text-amber-400"></i>
               <span>Chạm vào cây nến bất kỳ trên biểu đồ để xem</span>
             </div>
           </div>
 
-          <!-- Row 2: 4 Mức Giá OHLC Chuẩn TradingView -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-2.5 text-center font-mono text-xs">
-            <div class="bg-[#1a1e29] p-2 rounded-lg border border-[#2a2e39]">
-              <div class="text-[10px] text-slate-400 uppercase tracking-wider">Mở (Open)</div>
-              <div id="inspOpen" class="font-black text-slate-200 mt-0.5 text-sm sm:text-base">---</div>
+          <!-- Row 2: 4 Mức Giá OHLC Chuẩn TradingView (1 Dòng Gọn Gàng Trên Mobile) -->
+          <div class="grid grid-cols-4 gap-1.5 sm:gap-2 mb-2 text-center font-mono text-xs">
+            <div class="bg-[#1a1e29] p-1 sm:p-2 rounded-lg border border-[#2a2e39]">
+              <div class="text-[9px] sm:text-[10px] text-slate-400 uppercase tracking-wider">Mở</div>
+              <div id="inspOpen" class="font-black text-slate-200 mt-0.5 text-xs sm:text-base">---</div>
             </div>
-            <div class="bg-[#1a1e29] p-2 rounded-lg border border-[#2a2e39]">
-              <div class="text-[10px] text-emerald-400 uppercase tracking-wider">Cao (High)</div>
-              <div id="inspHigh" class="font-black text-emerald-400 mt-0.5 text-sm sm:text-base">---</div>
+            <div class="bg-[#1a1e29] p-1 sm:p-2 rounded-lg border border-[#2a2e39]">
+              <div class="text-[9px] sm:text-[10px] text-emerald-400 uppercase tracking-wider">Cao</div>
+              <div id="inspHigh" class="font-black text-emerald-400 mt-0.5 text-xs sm:text-base">---</div>
             </div>
-            <div class="bg-[#1a1e29] p-2 rounded-lg border border-[#2a2e39]">
-              <div class="text-[10px] text-rose-400 uppercase tracking-wider">Thấp (Low)</div>
-              <div id="inspLow" class="font-black text-rose-400 mt-0.5 text-sm sm:text-base">---</div>
+            <div class="bg-[#1a1e29] p-1 sm:p-2 rounded-lg border border-[#2a2e39]">
+              <div class="text-[9px] sm:text-[10px] text-rose-400 uppercase tracking-wider">Thấp</div>
+              <div id="inspLow" class="font-black text-rose-400 mt-0.5 text-xs sm:text-base">---</div>
             </div>
-            <div class="bg-[#1a1e29] p-2 rounded-lg border border-[#2a2e39]">
-              <div class="text-[10px] text-amber-400 uppercase tracking-wider">Đóng (Close)</div>
-              <div id="inspClose" class="font-black text-amber-400 mt-0.5 text-sm sm:text-base">---</div>
+            <div class="bg-[#1a1e29] p-1 sm:p-2 rounded-lg border border-[#2a2e39]">
+              <div class="text-[9px] sm:text-[10px] text-amber-400 uppercase tracking-wider">Đóng</div>
+              <div id="inspClose" class="font-black text-amber-400 mt-0.5 text-xs sm:text-base">---</div>
             </div>
           </div>
 
           <!-- Row 3: 20 Con Số Trúng Giải (Lottery Balls) -->
-          <div class="bg-[#0d1017] p-2.5 rounded-xl border border-[#2a2e39]">
-            <div class="flex items-center justify-between text-xs text-slate-300 mb-1.5 font-semibold">
-              <span class="flex items-center gap-1.5">
-                <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
+          <div class="bg-[#0d1017] p-2 sm:p-2.5 rounded-xl border border-[#2a2e39]">
+            <div class="flex items-center justify-between text-xs text-slate-300 mb-1 font-semibold">
+              <span class="flex items-center gap-1.5 text-[11px] sm:text-xs">
+                <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-400"></i>
                 <span>20 SỐ TRÚNG GIẢI KỲ NÀY:</span>
               </span>
-              <span class="text-[11px] text-slate-400 font-mono">
-                <span class="text-cyan-400 font-bold">● Số 01-40</span> &nbsp;|&nbsp; <span class="text-amber-400 font-bold">● Số 41-80</span>
+              <span class="text-[10px] sm:text-[11px] text-slate-400 font-mono">
+                <span class="text-cyan-400 font-bold">● 01-40</span> &nbsp;|&nbsp; <span class="text-amber-400 font-bold">● 41-80</span>
               </span>
             </div>
-            <div id="inspBallsContainer" class="flex flex-wrap gap-1.5 items-center justify-center min-h-[48px] py-1">
+            <div id="inspBallsContainer" class="flex flex-wrap gap-1 sm:gap-1.5 items-center justify-center min-h-[44px] py-0.5">
               <!-- 20 Balls rendered dynamically -->
             </div>
           </div>
         </div>
 
+      </div>
+
+      <!-- ======================================================== -->
+      <!-- CHỈ BÁO KILL ZONE & KHUNG GIỜ VÀNG ĐỊNH GIÁ OTE ICT -->
+      <!-- ======================================================== -->
+      <div id="killZoneSection" class="rounded-xl bg-[#131722] border border-amber-500/40 p-3 sm:p-4 shadow-xl space-y-3 transition-all duration-300">
+        <!-- Header -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#2a2e39] pb-2.5">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+              <i data-lucide="crosshair" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-xs sm:text-sm font-black text-amber-400 tracking-wide flex items-center gap-1.5 font-mono">
+                CHỈ BÁO KILL ZONE & GIÁ HỢP LÝ ICT (OTE)
+                <span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[9px] border border-amber-500/30">XÁC SUẤT CAO</span>
+              </h3>
+              <p class="text-[10px] text-slate-400">Khung giờ thanh khoản cực đại & vùng giá quá mua/quá bán để tối ưu tỷ lệ thắng</p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span id="kzHeaderLiveBadge" class="px-2.5 py-1 rounded-full text-[10px] font-bold font-mono border flex items-center gap-1.5 bg-emerald-500/15 border-emerald-500/40 text-emerald-300">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span id="kzHeaderLiveText">ĐANG TRONG KILL ZONE TỐI</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 3 Cột Trực Quan Hóa Tín Hiệu -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
+          
+          <!-- Cột 1: Khung Giờ Kill Zone -->
+          <div class="p-3 rounded-lg bg-[#1a1e29] border border-[#2a2e39] space-y-1.5">
+            <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+              <span class="flex items-center gap-1"><i data-lucide="clock" class="w-3 h-3 text-amber-400"></i> KHUNG GIỜ VÀNG (KILL ZONE)</span>
+              <span id="kzSessionPill" class="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono text-[9px]">PHIÊN TỐI</span>
+            </div>
+            <div id="kzSessionName" class="text-sm sm:text-base font-black text-amber-400 font-mono">
+              TỐI (18:30 - 21:00)
+            </div>
+            <p id="kzSessionDesc" class="text-[11px] text-slate-300">
+              Phiên cao điểm thanh khoản cực đại, biên độ nến bung mạnh nhất trong ngày.
+            </p>
+            <div class="text-[9px] text-slate-400 pt-1 border-t border-[#2a2e39]/60 flex justify-between font-mono">
+              <span>Sáng: 09:00 - 11:00</span>
+              <span>Trưa: 12:00 - 13:30</span>
+            </div>
+          </div>
+
+          <!-- Cột 2: Định Giá Nến OTE (Discount vs Premium) -->
+          <div class="p-3 rounded-lg bg-[#1a1e29] border border-[#2a2e39] space-y-1.5">
+            <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+              <span class="flex items-center gap-1"><i data-lucide="scale" class="w-3 h-3 text-cyan-400"></i> ĐỊNH GIÁ VÙNG OTE (GIÁ HỢP LÝ)</span>
+              <span id="kzValuationPill" class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-mono text-[9px]">PREMIUM</span>
+            </div>
+            <div class="flex items-baseline space-x-2">
+              <span id="kzPriceValue" class="text-sm sm:text-base font-black text-red-400 font-mono">962 đ</span>
+              <span id="kzPriceOffset" class="text-[11px] text-slate-400 font-mono">(Cách Pivot +152đ)</span>
+            </div>
+            <div id="kzPriceZoneDesc" class="text-[11px] text-slate-300 font-medium">
+              Vùng Quá Mua cực hạn (>900đ) ➜ Áp lực thống kê kéo điểm số quay đầu về BÉ rất mạnh.
+            </div>
+            <div class="text-[9px] text-slate-400 pt-1 border-t border-[#2a2e39]/60 flex justify-between font-mono">
+              <span class="text-emerald-400">Discount: &lt;720đ</span>
+              <span class="text-amber-400">Pivot: 810đ</span>
+              <span class="text-red-400">Premium: &gt;900đ</span>
+            </div>
+          </div>
+
+          <!-- Cột 3: Tín Hiệu Hành Động & Khi Nào Mua Mạnh -->
+          <div id="kzSignalCard" class="p-3 rounded-lg bg-gradient-to-br from-[#1a1e29] to-amber-950/20 border border-amber-500/50 space-y-1.5">
+            <div class="text-[10px] text-amber-400 font-semibold uppercase tracking-wider flex items-center justify-between">
+              <span class="flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3 text-amber-400"></i> TÍN HIỆU: KHI NÀO MUA MẠNH?</span>
+              <span id="kzConfidenceBadge" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[9px] font-bold">XÁC SUẤT CAO</span>
+            </div>
+            <div id="kzActionTitle" class="text-sm sm:text-base font-black text-amber-300 font-mono flex items-center gap-1">
+              🔥 CANH BÉ (ĐẢO CHIỀU)
+            </div>
+            <div id="kzActionDesc" class="text-[11px] text-slate-200">
+              Hội tụ 2 điều kiện: Đang trong Kill Zone + Giá ở Vùng Premium (962đ). Tỷ lệ đảo chiều về Bé cao nhất!
+            </div>
+            <div class="text-[9px] text-amber-300/80 pt-1 border-t border-amber-500/20 flex items-center gap-1 font-mono">
+              <i data-lucide="shield-alert" class="w-2.5 h-2.5 text-amber-400"></i>
+              <span>Kỷ luật vốn: Tối đa 10k/kỳ, tuyệt đối không tất tay!</span>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       <!-- BẢNG PHÂN TÍCH THEO PHƯƠNG PHÁP ICT (INNER CIRCLE TRADER) -->
@@ -812,26 +913,30 @@
   </main>
 
   <!-- MOBILE FIXED BOTTOM NAVIGATION BAR -->
-  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1e222d] border-t border-brand-border px-2 py-1.5 flex justify-around text-[10px] font-semibold text-slate-400">
-    <button onclick="switchTab('chart')" id="mtab-chart" class="mtab-btn active flex flex-col items-center text-amber-400">
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#1e222d]/95 backdrop-blur border-t border-brand-border px-1 py-1.5 flex justify-around text-[9px] font-semibold text-slate-400">
+    <button onclick="switchTab('chart')" id="mtab-chart" class="mtab-btn active flex flex-col items-center text-amber-400 flex-1">
       <i data-lucide="candlestick-chart" class="w-4 h-4 mb-0.5"></i>
       <span>Nến ICT</span>
     </button>
-    <button onclick="switchTab('predict')" id="mtab-predict" class="mtab-btn flex flex-col items-center">
+    <button onclick="switchTab('predict')" id="mtab-predict" class="mtab-btn flex flex-col items-center flex-1">
       <i data-lucide="sparkles" class="w-4 h-4 mb-0.5"></i>
       <span>Dự Báo</span>
     </button>
-    <button onclick="switchTab('matrix')" id="mtab-matrix" class="mtab-btn flex flex-col items-center">
+    <button onclick="switchTab('matrix')" id="mtab-matrix" class="mtab-btn flex flex-col items-center flex-1">
       <i data-lucide="grid" class="w-4 h-4 mb-0.5"></i>
-      <span>80 Số</span>
+      <span>80 Bóng</span>
     </button>
-    <button onclick="switchTab('wheel')" id="mtab-wheel" class="mtab-btn flex flex-col items-center">
+    <button onclick="switchTab('wheel')" id="mtab-wheel" class="mtab-btn flex flex-col items-center flex-1">
       <i data-lucide="ticket" class="w-4 h-4 mb-0.5"></i>
       <span>Dàn Vé</span>
     </button>
-    <button onclick="switchTab('history')" id="mtab-history" class="mtab-btn flex flex-col items-center">
+    <button onclick="switchTab('overlap')" id="mtab-overlap" class="mtab-btn flex flex-col items-center flex-1">
+      <i data-lucide="layers" class="w-4 h-4 mb-0.5"></i>
+      <span>Độ Trùng</span>
+    </button>
+    <button onclick="switchTab('history')" id="mtab-history" class="mtab-btn flex flex-col items-center flex-1">
       <i data-lucide="database" class="w-4 h-4 mb-0.5"></i>
-      <span>Kết Quả</span>
+      <span>Kho Data</span>
     </button>
   </nav>
 
@@ -1182,9 +1287,11 @@
       if (!tvChart) {
         container.innerHTML = '';
         const parentH = container.parentElement ? container.parentElement.clientHeight : 0;
-        const initialH = Math.max(380, container.clientHeight, parentH);
+        const isMobile = window.innerWidth < 640;
+        const defaultMinH = isMobile ? 290 : 380;
+        const initialH = Math.max(defaultMinH, container.clientHeight, parentH);
         const parentW = container.parentElement ? container.parentElement.clientWidth : 0;
-        const initialW = Math.max(300, container.clientWidth, parentW);
+        const initialW = Math.max(280, container.clientWidth, parentW);
 
         tvChart = LightweightCharts.createChart(container, {
           width: initialW,
@@ -1672,6 +1779,9 @@
       if (elLow) elLow.textContent = d.low;
       if (elClose) elClose.textContent = d.close;
 
+      // Cập nhật chỉ báo Kill Zone & Vùng Giá Hợp Lý OTE
+      updateKillZoneHUD(d);
+
       if (ballsContainer) {
         if (d.numbers && d.numbers.length > 0) {
           ballsContainer.innerHTML = d.numbers.map(num => {
@@ -1740,6 +1850,9 @@
       if (elLow) elLow.textContent = d.low;
       if (elClose) elClose.textContent = d.close;
 
+      // Cập nhật chỉ báo Kill Zone & Vùng Giá Hợp Lý OTE
+      updateKillZoneHUD(d);
+
       if (elDelta) {
         elDelta.textContent = (d.delta >= 0 ? '+' : '') + d.delta + ' đ (' + (d.delta >= 0 ? '+' : '') + d.deltaPercent + '%)';
         elDelta.className = d.delta >= 0 ? 'text-emerald-400 font-bold ml-1' : 'text-red-400 font-bold ml-1';
@@ -1787,6 +1900,216 @@
         elem.requestFullscreen().catch(err => console.log(err));
       } else {
         document.exitFullscreen();
+      }
+    }
+
+    // ==========================================
+    // CHỈ BÁO KILL ZONE & VÙNG GIÁ HỢP LÝ ICT (OTE)
+    // ==========================================
+    let killZoneEnabled = true;
+
+    function toggleKillZone() {
+      killZoneEnabled = !killZoneEnabled;
+      const btn = document.getElementById('btnKillZone');
+      const txt = document.getElementById('killZoneBtnText');
+      if (killZoneEnabled) {
+        if (btn) {
+          btn.classList.add('bg-amber-500/25', 'border-amber-400', 'text-amber-300', 'shadow-lg');
+          btn.classList.remove('bg-[#131722]', 'text-slate-300');
+        }
+        if (txt) txt.textContent = '🎯 Bật Kill Zone';
+        showToast('🎯 CHỈ BÁO KILL ZONE ĐÃ BẬT', 'Đã hiện Vùng Premium (>900đ), Discount (<720đ) & 3 Khung Giờ Vàng.');
+      } else {
+        if (btn) {
+          btn.classList.remove('bg-amber-500/25', 'border-amber-400', 'text-amber-300', 'shadow-lg');
+          btn.classList.add('bg-[#131722]', 'text-slate-300');
+        }
+        if (txt) txt.textContent = '🎯 Kill Zone';
+      }
+      redrawCanvas();
+    }
+
+    function getKillZoneInfo(timeSec) {
+      let d = timeSec ? new Date(timeSec * 1000) : new Date();
+      // Chuyển sang giờ UTC+7 (Hà Nội)
+      const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      const vnDate = new Date(utc + (3600000 * 7));
+      const h = vnDate.getHours();
+      const m = vnDate.getMinutes();
+      const dec = h + m / 60;
+
+      if (dec >= 9.0 && dec <= 11.0) {
+        return { inZone: true, session: 'morning', name: 'SÁNG (09:00 - 11:00)', pillText: 'PHIÊN SÁNG', tag: 'Morning KZ', desc: 'Phiên bùng nổ xu hướng sáng, dòng tiền đẩy mạnh.' };
+      } else if (dec >= 12.0 && dec <= 13.5) {
+        return { inZone: true, session: 'lunch', name: 'TRƯA (12:00 - 13:30)', pillText: 'PHIÊN TRƯA', tag: 'Lunch Sweep', desc: 'Phiên quét thanh khoản 2 đầu, dễ tạo râu nến đảo chiều.' };
+      } else if (dec >= 18.5 && dec <= 21.0) {
+        return { inZone: true, session: 'evening', name: 'TỐI (18:30 - 21:00)', pillText: 'PHIÊN TỐI', tag: 'Prime Evening', desc: 'Phiên cao điểm vàng - Biên độ nến bung mạnh nhất trong ngày.' };
+      }
+      return { inZone: false, session: 'off', name: 'NGOÀI KILL ZONE', pillText: 'NGOÀI GIỜ', tag: 'Normal', desc: 'Biến động thấp, nến dễ đi ngang gần mốc 810đ.' };
+    }
+
+    function getPriceZoneInfo(price) {
+      const p = Number(price) || 810;
+      const offset = p - 810;
+      const offsetStr = (offset >= 0 ? '+' : '') + offset + 'đ';
+
+      if (p >= 900) {
+        return {
+          zone: 'PREMIUM',
+          colorClass: 'text-red-400',
+          bgClass: 'bg-red-500/20 border-red-500/40 text-red-300',
+          pillText: 'PREMIUM (QUÁ MUA)',
+          offsetStr: `(Cách Pivot ${offsetStr})`,
+          desc: `Vùng Quá Mua cực hạn (>900đ) ➜ Áp lực thống kê kéo điểm số quay đầu về BÉ rất mạnh.`,
+          actionTitle: '🔥 MUA MẠNH BÉ (ĐẢO CHIỀU)',
+          actionClass: 'text-red-400',
+          actionType: 'BE',
+          confidence: 'XÁC SUẤT CAO (75%)',
+          confClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+          reason: 'Giá đã bị đẩy lên quá cao (>900đ). Theo luật hồi quy Mean Reversion, nến có xác suất cao quay đầu giảm về BÉ.'
+        };
+      } else if (p <= 720) {
+        return {
+          zone: 'DISCOUNT',
+          colorClass: 'text-emerald-400',
+          bgClass: 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300',
+          pillText: 'DISCOUNT (QUÁ BÁN)',
+          offsetStr: `(Cách Pivot ${offsetStr})`,
+          desc: `Vùng Quá Bán cực hạn (<720đ) ➜ Lực cầu thống kê đẩy điểm số bật tăng về LỚN rất mạnh.`,
+          actionTitle: '🔥 MUA MẠNH LỚN (BẬT TĂNG)',
+          actionClass: 'text-emerald-400',
+          actionType: 'LON',
+          confidence: 'XÁC SUẤT CAO (75%)',
+          confClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+          reason: 'Giá đã bị ép xuống quá thấp (<720đ). Theo luật hồi quy Mean Reversion, nến có xác suất cao bật tăng về LỚN.'
+        };
+      } else if (p >= 860) {
+        return {
+          zone: 'MILD_PREMIUM',
+          colorClass: 'text-amber-300',
+          bgClass: 'bg-amber-500/20 border-amber-500/40 text-amber-300',
+          pillText: 'CẬN PREMIUM (860-899đ)',
+          offsetStr: `(Cách Pivot ${offsetStr})`,
+          desc: `Giá đang cao hơn mốc 810đ. Xu hướng nghiêng về BÉ nhưng chưa đạt vùng cực trị.`,
+          actionTitle: '⚠️ CÂN NHẮC BÉ (CƯỢC NHỎ)',
+          actionClass: 'text-amber-300',
+          actionType: 'BE_MILD',
+          confidence: 'TRUNG BÌNH (55%)',
+          confClass: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+          reason: 'Nến ở vùng cận trên, có thể canh BÉ nhưng biên độ an toàn chưa tối ưu.'
+        };
+      } else if (p <= 760) {
+        return {
+          zone: 'MILD_DISCOUNT',
+          colorClass: 'text-cyan-300',
+          bgClass: 'bg-cyan-500/20 border-cyan-500/40 text-cyan-300',
+          pillText: 'CẬN DISCOUNT (721-760đ)',
+          offsetStr: `(Cách Pivot ${offsetStr})`,
+          desc: `Giá đang thấp hơn mốc 810đ. Xu hướng nghiêng về LỚN nhưng chưa đạt vùng cực trị.`,
+          actionTitle: '⚠️ CÂN NHẮC LỚN (CƯỢC NHỎ)',
+          actionClass: 'text-cyan-300',
+          actionType: 'LON_MILD',
+          confidence: 'TRUNG BÌNH (55%)',
+          confClass: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+          reason: 'Nến ở vùng cận dưới, có thể canh LỚN nhưng biên độ an toàn chưa tối ưu.'
+        };
+      } else {
+        return {
+          zone: 'EQUILIBRIUM',
+          colorClass: 'text-slate-300',
+          bgClass: 'bg-slate-800 border-slate-700 text-slate-300',
+          pillText: 'CÂN BẰNG (761-859đ)',
+          offsetStr: `(Cách Pivot ${offsetStr})`,
+          desc: `Vùng 50/50 sát ranh giới 810đ. Xác suất trượt cao, dễ dính bẫy và hòa.`,
+          actionTitle: '🛡️ ĐỨNG NGOÀI (NO TRADE)',
+          actionClass: 'text-slate-400',
+          actionType: 'HOLD',
+          confidence: 'RỦI RO CAO (50/50)',
+          confClass: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+          reason: 'Giá đang lơ lửng sát mốc 810đ. Không có lợi thế xác suất, KHUYẾN NGHỊ ĐỨNG NGOÀI!'
+        };
+      }
+    }
+
+    function updateKillZoneHUD(d) {
+      if (!d) return;
+      const kz = getKillZoneInfo(d.time);
+      const pz = getPriceZoneInfo(d.close);
+
+      // Cập nhật tag nhỏ trên bảng Soi nến
+      const elKzTag = document.getElementById('inspKillZoneTag');
+      const elKzText = document.getElementById('inspKillZoneText');
+      if (elKzTag && elKzText) {
+        if (kz.inZone) {
+          elKzTag.className = 'text-[11px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded flex items-center gap-1 font-mono';
+          elKzText.textContent = `🎯 ${kz.tag}`;
+        } else {
+          elKzTag.className = 'text-[11px] font-semibold text-slate-400 bg-slate-800/60 border border-slate-700 px-2 py-0.5 rounded flex items-center gap-1 font-mono';
+          elKzText.textContent = `⏳ Ngoài KZ`;
+        }
+      }
+
+      // Cập nhật Widget Kill Zone lớn
+      const elHeaderLiveBadge = document.getElementById('kzHeaderLiveBadge');
+      const elHeaderLiveText = document.getElementById('kzHeaderLiveText');
+      if (elHeaderLiveBadge && elHeaderLiveText) {
+        if (kz.inZone) {
+          elHeaderLiveBadge.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold font-mono border flex items-center gap-1.5 bg-emerald-500/15 border-emerald-500/40 text-emerald-300';
+          elHeaderLiveText.textContent = `ĐANG TRONG KILL ZONE ${kz.pillText}`;
+        } else {
+          elHeaderLiveBadge.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold font-mono border flex items-center gap-1.5 bg-slate-800 border-slate-700 text-slate-400';
+          elHeaderLiveText.textContent = `NGOÀI KHUNG GIỜ KILL ZONE`;
+        }
+      }
+
+      const elSessionPill = document.getElementById('kzSessionPill');
+      const elSessionName = document.getElementById('kzSessionName');
+      const elSessionDesc = document.getElementById('kzSessionDesc');
+      if (elSessionPill) elSessionPill.textContent = kz.pillText;
+      if (elSessionName) elSessionName.textContent = kz.name;
+      if (elSessionDesc) elSessionDesc.textContent = kz.desc;
+
+      const elValuationPill = document.getElementById('kzValuationPill');
+      const elPriceValue = document.getElementById('kzPriceValue');
+      const elPriceOffset = document.getElementById('kzPriceOffset');
+      const elPriceZoneDesc = document.getElementById('kzPriceZoneDesc');
+      if (elValuationPill) {
+        elValuationPill.textContent = pz.pillText;
+        elValuationPill.className = `px-1.5 py-0.5 rounded font-mono text-[9px] border ${pz.bgClass}`;
+      }
+      if (elPriceValue) {
+        elPriceValue.textContent = `${d.close} đ`;
+        elPriceValue.className = `text-sm sm:text-base font-black font-mono ${pz.colorClass}`;
+      }
+      if (elPriceOffset) elPriceOffset.textContent = pz.offsetStr;
+      if (elPriceZoneDesc) elPriceZoneDesc.textContent = pz.desc;
+
+      const elConfidenceBadge = document.getElementById('kzConfidenceBadge');
+      const elActionTitle = document.getElementById('kzActionTitle');
+      const elActionDesc = document.getElementById('kzActionDesc');
+      const elSignalCard = document.getElementById('kzSignalCard');
+
+      if (elConfidenceBadge) {
+        elConfidenceBadge.textContent = pz.confidence;
+        elConfidenceBadge.className = `px-1.5 py-0.5 rounded font-mono text-[9px] font-bold border ${pz.confClass}`;
+      }
+      if (elActionTitle) {
+        elActionTitle.textContent = pz.actionTitle;
+        elActionTitle.className = `text-sm sm:text-base font-black font-mono flex items-center gap-1 ${pz.actionClass}`;
+      }
+      if (elActionDesc) {
+        let fullDesc = pz.reason;
+        if (kz.inZone && (pz.zone === 'PREMIUM' || pz.zone === 'DISCOUNT')) {
+          fullDesc = `🔥 HỘI TỤ VÀNG: Đang trong ${kz.name} + Giá ở ${pz.pillText} (${d.close}đ). Đây là thời điểm ${pz.actionTitle} có xác suất cao nhất!`;
+          if (elSignalCard) {
+            elSignalCard.className = 'p-3 rounded-lg bg-gradient-to-br from-[#1a1e29] via-amber-950/30 to-[#1a1e29] border border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.25)] space-y-1.5';
+          }
+        } else {
+          if (elSignalCard) {
+            elSignalCard.className = 'p-3 rounded-lg bg-[#1a1e29] border border-[#2a2e39] space-y-1.5';
+          }
+        }
+        elActionDesc.textContent = fullDesc;
       }
     }
 
@@ -2209,6 +2532,79 @@
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const timeScale = tvChart.timeScale();
+
+      // ==========================================
+      // A0. VẼ CHỈ BÁO KILL ZONE & VÙNG GIÁ HỢP LÝ ICT (PREMIUM / DISCOUNT / OTE)
+      // ==========================================
+      if (killZoneEnabled && appData && appData.tradingView && appData.tradingView.candles) {
+        // 1. Vùng Premium (Quá mua > 900đ)
+        const y900 = candleSeries.priceToCoordinate(900);
+        if (y900 !== null) {
+          const height = Math.max(20, y900);
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.08)';
+          ctx.fillRect(0, 0, canvas.width, height);
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(0, y900);
+          ctx.lineTo(canvas.width, y900);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#f87171';
+          ctx.font = 'bold 9px "JetBrains Mono", monospace';
+          ctx.fillText('🔴 VÙNG PREMIUM (>900đ) ➜ CANH BÉ (XÁC SUẤT CAO)', 12, y900 - 5);
+        }
+
+        // 2. Vùng Discount (Quá bán < 720đ)
+        const y720 = candleSeries.priceToCoordinate(720);
+        if (y720 !== null) {
+          const height = Math.max(20, canvas.height - y720);
+          ctx.fillStyle = 'rgba(16, 185, 129, 0.08)';
+          ctx.fillRect(0, y720, canvas.width, height);
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(0, y720);
+          ctx.lineTo(canvas.width, y720);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#34d399';
+          ctx.font = 'bold 9px "JetBrains Mono", monospace';
+          ctx.fillText('🟢 VÙNG DISCOUNT (<720đ) ➜ CANH LỚN (XÁC SUẤT CAO)', 12, y720 + 13);
+        }
+
+        // 3. Đường Pivot Cân Bằng (810đ)
+        const yPivot = candleSeries.priceToCoordinate(810);
+        if (yPivot !== null) {
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.5)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          ctx.moveTo(0, yPivot);
+          ctx.lineTo(canvas.width, yPivot);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = '9px "JetBrains Mono", monospace';
+          ctx.fillText('PIVOT 810đ (VÙNG CÂN BẰNG - ĐỨNG NGOÀI)', canvas.width - 250, yPivot - 4);
+        }
+
+        // 4. Đánh dấu các nến nằm trong Khung Giờ Kill Zone
+        const candles = appData.tradingView.candles;
+        const recent = candles.slice(-50);
+        recent.forEach(c => {
+          const kz = getKillZoneInfo(c.time);
+          if (kz.inZone) {
+            const x = timeScale.timeToCoordinate(c.time);
+            if (x !== null) {
+              ctx.fillStyle = 'rgba(245, 158, 11, 0.04)';
+              ctx.fillRect(x - 9, 0, 18, canvas.height);
+            }
+          }
+        });
+      }
 
       // ==========================================
       // A. VẼ TỰ ĐỘNG ICT / SMART MONEY CONCEPTS
