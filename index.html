@@ -1557,14 +1557,15 @@
             rightOffset: 6,           // Khoảng đệm 6 nến bên phải
             lockVisibleTimeRangeOnResize: true,
             tickMarkFormatter: (time, tickMarkType, locale) => {
+              const candles = getActiveCandles();
+              const c = (candles && candles.length > 0) ? candles.find(item => item.time === time) : null;
+              if (c && c.date && tickMarkType <= 2) {
+                const parts = c.date.split('/');
+                if (parts.length >= 2) return `${parts[0]}/${parts[1]}`;
+              }
               const d = new Date(time * 1000);
               const hh = String(d.getHours()).padStart(2, '0');
               const mm = String(d.getMinutes()).padStart(2, '0');
-              const dd = String(d.getDate()).padStart(2, '0');
-              const mo = String(d.getMonth() + 1).padStart(2, '0');
-              if (tickMarkType <= 2) {
-                return `${dd}/${mo}`;
-              }
               return `${hh}:${mm}`;
             }
           },
@@ -1973,13 +1974,15 @@
       const drawNo = d.drawId ? (d.drawId.startsWith('#') ? d.drawId : '#' + d.drawId) : '#---';
       if (elDraw) elDraw.textContent = `Kỳ ${drawNo}`;
 
-      if (elTime && d.time) {
-        const dt = new Date(d.time * 1000);
-        const hh = String(dt.getHours()).padStart(2, '0');
-        const mm = String(dt.getMinutes()).padStart(2, '0');
-        const dd = String(dt.getDate()).padStart(2, '0');
-        const mo = String(dt.getMonth() + 1).padStart(2, '0');
-        elTime.textContent = `${hh}:${mm} (${dd}/${mo})`;
+      if (elTime) {
+        if (d.date) {
+          elTime.textContent = d.date;
+        } else if (d.time) {
+          const dt = new Date(d.time * 1000);
+          const hh = String(dt.getHours()).padStart(2, '0');
+          const mm = String(dt.getMinutes()).padStart(2, '0');
+          elTime.textContent = `${hh}:${mm}`;
+        }
       }
 
       if (elBadgeLonNho) elBadgeLonNho.className = `px-2.5 py-1 rounded-lg border flex items-center space-x-1.5 ${d.lonNhoClass}`;
@@ -2081,13 +2084,8 @@
       }
       if (elInfo) {
         let timeStr = '';
-        if (d.time) {
-          const dt = new Date(d.time * 1000);
-          const hh = String(dt.getHours()).padStart(2, '0');
-          const mm = String(dt.getMinutes()).padStart(2, '0');
-          const dd = String(dt.getDate()).padStart(2, '0');
-          const mo = String(dt.getMonth() + 1).padStart(2, '0');
-          timeStr = ` • ${hh}:${mm} (${dd}/${mo})`;
+        if (d.date) {
+          timeStr = ` • ${d.date}`;
         }
         const drawNo = d.drawId ? (d.drawId.startsWith('#') ? d.drawId : '#' + d.drawId) : '';
         const badgeLonNho = d.lonNhoText ? `<span class="px-1.5 py-0.5 rounded text-[10px] ${d.lonNhoClass} font-bold ml-1">${d.lonNhoText}</span>` : '';
