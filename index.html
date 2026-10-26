@@ -1246,6 +1246,7 @@
         if (chunk.length === 0) continue;
         const open = chunk[0].open;
         const close = chunk[chunk.length - 1].close;
+        const lastInChunk = chunk[chunk.length - 1];
         let high = -Infinity;
         let low = Infinity;
         let sum = 0;
@@ -1256,14 +1257,18 @@
         });
         res.push({
           time: chunk[0].time,
-          drawId: chunk[chunk.length - 1].drawId,
-          date: chunk[chunk.length - 1].date,
+          drawId: lastInChunk.drawId,
+          date: lastInChunk.date,
           open,
           high,
           low,
           close,
           sum: Math.round(sum / chunk.length),
-          volume: chunk.length * 10
+          volume: chunk.length * 10,
+          numbers: lastInChunk.numbers,
+          evenCount: lastInChunk.numbers ? lastInChunk.numbers.filter(n => parseInt(n, 10) % 2 === 0).length : undefined,
+          chanLe: lastInChunk.chanLe,
+          lonNho: lastInChunk.lonNho
         });
       }
       return res;
@@ -1437,16 +1442,16 @@
       countdownIntervalId = setInterval(() => {
         if (!isTabActive) return; // Tiết kiệm CPU tuyệt đối khi chuyển sang app khác
         const now = new Date();
-        const min = now.getMinutes();
-        const sec = now.getSeconds();
-        const remainingSeconds = ((9 - (min % 10)) * 60) + (60 - sec);
-        const m = Math.floor(remainingSeconds / 60);
-        const s = remainingSeconds % 60;
+        const totalSec = now.getMinutes() * 60 + now.getSeconds();
+        const period = 600; // Chu kỳ 10 phút
+        const rem = (period - (totalSec % period)) % period;
+        const m = Math.floor(rem / 60);
+        const s = rem % 60;
         const timerEl = document.getElementById('countdownTimer');
         if (timerEl) {
           timerEl.textContent = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
         }
-        if (remainingSeconds <= 3) {
+        if (rem === 0 || rem === 599) {
           loadStats(true);
         }
       }, 1000);
@@ -2027,7 +2032,7 @@
     function inspectCandle(candle) {
       updateCandleInspector(candle);
       updateLegend(candle);
-      if (navigator && navigator.vibrate) {
+      if (navigator && navigator.vibrate && navigator.userActivation && navigator.userActivation.hasBeenActive) {
         try { navigator.vibrate(25); } catch (e) {}
       }
     }
@@ -2337,9 +2342,9 @@
     // AI TỰ ĐỘNG TÍNH TOÁN 2 KẾT QUẢ ĐỘC LẬP (LỚN/BÉ & CHẴN/LẺ - ĐỘ PHỦ 95% CÁC KỲ)
     // ==========================================
     function calculateAISignals(candle) {
-      const activeCandles = getActiveCandles();
-      if (!candle && activeCandles && activeCandles.length > 0) {
-        candle = activeCandles[activeCandles.length - 1];
+      const baseCandles = (appData && appData.tradingView && appData.tradingView.candles) || getActiveCandles();
+      if (!candle && baseCandles && baseCandles.length > 0) {
+        candle = baseCandles[baseCandles.length - 1];
       }
       if (!candle) return;
 
@@ -2350,19 +2355,20 @@
       const elTargetDrawId = document.getElementById('aiTargetDrawId');
       if (elTargetDrawId) elTargetDrawId.textContent = nextDrawStr;
 
-      // Tìm vị trí của candle trong danh sách nến để tính chuỗi bệt
+      // Tìm vị trí của candle trong danh sách nến gốc (10M) để tính chuẩn xác chuỗi bệt bất kể khung thời gian chart
+      const cleanDrawId = String(candle.drawId || '').replace(/^#/, '');
       let candleIdx = -1;
-      if (activeCandles && activeCandles.length > 0) {
-        candleIdx = activeCandles.findIndex(c => c.drawId === candle.drawId);
-        if (candleIdx === -1) candleIdx = activeCandles.length - 1;
+      if (baseCandles && baseCandles.length > 0) {
+        candleIdx = baseCandles.findIndex(c => String(c.drawId || '').replace(/^#/, '') === cleanDrawId);
+        if (candleIdx === -1) candleIdx = baseCandles.length - 1;
       }
 
       // 1. Tính chuỗi bệt Lớn / Bé
       let lonStreak = 0;
       let beStreak = 0;
-      if (activeCandles && candleIdx >= 0) {
+      if (baseCandles && candleIdx >= 0) {
         for (let i = candleIdx; i >= 0; i--) {
-          const val = Number(activeCandles[i].close || activeCandles[i].sum || 810);
+          const val = Number(baseCandles[i].close || baseCandles[i].sum || 810);
           if (val > 810) {
             if (beStreak > 0) break;
             lonStreak++;
@@ -2379,12 +2385,15 @@
       let chanStreak = 0;
       let leStreak = 0;
       let lastOutcomeCL = 'HÒA';
-      if (activeCandles && candleIdx >= 0) {
+      if (baseCandles && candleIdx >= 0) {
         for (let i = candleIdx; i >= 0; i--) {
-          const cItem = activeCandles[i];
+          const cItem = baseCandles[i];
           let evCount = cItem.evenCount;
           if (evCount === undefined && cItem.numbers) {
             evCount = cItem.numbers.filter(n => parseInt(n, 10) % 2 === 0).length;
+          }
+          if (evCount === undefined && typeof cItem.volume === 'number' && cItem.volume <= 20) {
+            evCount = cItem.volume;
           }
           if (evCount === undefined) evCount = 10;
 
@@ -2404,7 +2413,9 @@
         }
       }
 
-      const p = Number(candle.close || candle.sum) || 810;
+      // Lấy điểm giá nến thực tế (ưu tiên nến gốc 10M tại vị trí candleIdx)
+      const refCandle = (candleIdx >= 0 && baseCandles[candleIdx]) ? baseCandles[candleIdx] : candle;
+      const p = Number(refCandle.close || refCandle.sum) || 810;
 
       // ==========================================
       // KẾT QUẢ 1: PHÂN TÍCH CỬA LỚN / BÉ (ĐỘ PHỦ 92%)
