@@ -1,3 +1,14 @@
+
+function getTodayVnDate() {
+  const d = new Date();
+  const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+  const vnTime = new Date(utc + (3600000 * 7));
+  const dd = String(vnTime.getDate()).padStart(2, '0');
+  const mm = String(vnTime.getMonth() + 1).padStart(2, '0');
+  const yyyy = vnTime.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -346,7 +357,7 @@ async function fetchDrawDetail(drawId) {
 
       return {
         drawId,
-        date: dateMatch ? dateMatch[1] : '25/10/2026',
+        date: dateMatch ? dateMatch[1] : getTodayVnDate(),
         numbers,
         chanLe,
         lonNho
@@ -468,7 +479,7 @@ async function fetchLatestFromMainPage() {
 
         results.push({
           drawId: drawMatch[1],
-          date: dateMatch ? dateMatch[1] : '25/10/2026',
+          date: dateMatch ? dateMatch[1] : getTodayVnDate(),
           numbers,
           chanLe,
           lonNho

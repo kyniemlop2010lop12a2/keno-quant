@@ -639,6 +639,28 @@
         </div>
 
         <!-- 3 Cửa Cược: LỚN/BÉ - CHẴN/LẺ - HÒA -->
+        
+        <!-- KHUYẾN NGHỊ ĐẶT CƯỢC ĐỘC TÔN (VỐN 100K TẠI QUẦY) -->
+        <div id="aiSoloAdviceBox" class="p-3 rounded-xl bg-gradient-to-r from-amber-950/40 via-slate-900 to-amber-950/40 border-2 border-amber-500/60 shadow-lg relative z-10 flex flex-wrap items-center justify-between gap-2.5 transition-all duration-300">
+          <div class="flex items-center gap-2.5">
+            <div id="aiSoloIconBox" class="w-9 h-9 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-black flex-shrink-0 shadow-inner">
+              <i data-lucide="crosshair" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-amber-400 font-mono">GỢI Ý TẠI QUẦY (VỐN 100K):</span>
+                <span id="aiSoloActionBadge" class="text-xs font-black px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">MUA 100K [BÉ]</span>
+              </div>
+              <p id="aiSoloReason" class="text-xs text-slate-200 font-sans mt-0.5 leading-snug">
+                Chỉ đánh đúng 1 cửa có xác suất cao nhất. Bỏ hẳn Chẵn/Lẻ để ăn trọn +100k lãi ròng!
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="aiSoloRateText" class="text-xs font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-1 rounded-lg">Kỳ Vọng: +100k</span>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 relative z-10 font-mono text-xs">
           
           <!-- Box 1: KẾT QUẢ CỬA 1 (LỚN / BÉ) -->
@@ -734,19 +756,19 @@
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center pt-0.5">
             <div class="p-1 rounded bg-[#131722] border border-emerald-500/30">
               <div class="text-slate-400 text-[9px]">Hồi Quy BÉ (&ge;815đ)</div>
-              <div class="text-emerald-400 font-bold">87.8% Thắng (K2-3)</div>
+              <div class="text-emerald-400 font-bold">56.6% Thắng (K1)</div>
             </div>
             <div class="p-1 rounded bg-[#131722] border border-emerald-500/30">
               <div class="text-slate-400 text-[9px]">Hồi Quy LỚN (&le;805đ)</div>
-              <div class="text-emerald-400 font-bold">91.1% Thắng (K2-3)</div>
+              <div class="text-emerald-400 font-bold">56.0% - 60.9% (K1)</div>
             </div>
             <div class="p-1 rounded bg-[#131722] border border-emerald-500/30">
               <div class="text-slate-400 text-[9px]">Theo Cầu &ge;2 Chẵn</div>
-              <div class="text-emerald-400 font-bold">78.8% - 92.9% Ăn</div>
+              <div class="text-emerald-400 font-bold">56.7% Bệt Chẵn</div>
             </div>
             <div class="p-1 rounded bg-[#131722] border border-emerald-500/30">
               <div class="text-slate-400 text-[9px]">Theo Cầu &ge;2 Lẻ</div>
-              <div class="text-emerald-400 font-bold">78.9% - 80.0% Ăn</div>
+              <div class="text-emerald-400 font-bold">60.0% Bẻ Bệt Bé</div>
             </div>
           </div>
         </div>
@@ -1405,8 +1427,15 @@
     let statsRetryCount = 0;
     async function loadStats(isSilent = false) {
       try {
-        const res = await fetch('/api/stats');
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        let res;
+        try {
+          res = await fetch('/api/stats');
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+        } catch (fetchErr) {
+          // Fallback static json if opened via file:// or CDN
+          res = await fetch('keno_real_stats.json');
+          if (!res.ok) throw fetchErr;
+        }
         const data = await res.json();
         statsRetryCount = 0;
         
@@ -2353,7 +2382,7 @@
       const elTargetDrawId = document.getElementById('aiTargetDrawId');
       if (elTargetDrawId) elTargetDrawId.textContent = nextDrawStr;
 
-      // Tìm vị trí của candle trong danh sách nến gốc (10M) để tính chuẩn xác chuỗi bệt bất kể khung thời gian chart
+      // Tìm vị trí của candle trong danh sách nến gốc (10M) để tính chuẩn xác chuỗi bệt
       const cleanDrawId = String(candle.drawId || '').replace(/^#/, '');
       let candleIdx = -1;
       if (baseCandles && baseCandles.length > 0) {
@@ -2411,111 +2440,142 @@
         }
       }
 
-      // Lấy điểm giá nến thực tế (ưu tiên nến gốc 10M tại vị trí candleIdx)
+      // Lấy điểm giá nến thực tế
       const refCandle = (candleIdx >= 0 && baseCandles[candleIdx]) ? baseCandles[candleIdx] : candle;
       const p = Number(refCandle.close || refCandle.sum) || 810;
 
       // ==========================================
-      // KẾT QUẢ 1: PHÂN TÍCH CỬA LỚN / BÉ (ĐỘ PHỦ 92%)
+      // KẾT QUẢ 1: PHÂN TÍCH CỬA LỚN / BÉ (K1 SINGLE DRAW)
       // ==========================================
       let isLonBe80 = true;
-      let lonBeChoice = 'CANH HỒI QUY: ĐẶT BÉ';
-      let lonBeConf = '87.8% THẮNG';
+      let lonBeChoice = 'CANH BÉ (HỒI QUY)';
+      let lonBeConf = '56.6% K1';
       let lonBeConfClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
-      let lonBeTag = '🟢 VÙNG HỒI QUY BÉ';
-      let probLon = 42;
-      let probBe = 58;
+      let lonBeTag = '🟢 HỒI QUY BÉ';
+      let probLon = 43;
+      let probBe = 57;
       let lonBeReason = '';
 
-      if (p >= 900) {
-        lonBeChoice = 'BẮN TỈA BÉ';
-        lonBeConf = '92.5% THẮNG';
-        lonBeTag = '🟢 SIÊU QUÁ MUA';
-        probBe = 72; probLon = 28;
-        lonBeReason = 'Nến ở đỉnh ' + p + 'đ (>900đ quá mua cực hạn). Lực xả hàng hút mạnh về BÉ đạt 92.5% thắng (Khung 2-3 kỳ).';
-      } else if (p <= 720) {
-        lonBeChoice = 'BẮN TỈA LỚN';
-        lonBeConf = '94.1% THẮNG';
-        lonBeTag = '🟢 SIÊU QUÁ BÁN';
-        probLon = 72; probBe = 28;
-        lonBeReason = 'Nến rơi xuống đáy ' + p + 'đ (<720đ quá bán cực hạn). Lực gom mua đẩy bật về LỚN đạt 94.1% thắng (Khung 2-3 kỳ).';
-      } else if (p >= 815) {
-        lonBeChoice = 'CANH BÉ (HỒI QUY)';
-        lonBeConf = (p >= 850 ? '87.8%' : '87.3%') + ' THẮNG';
-        lonBeTag = '🟢 HỒI QUY BÉ';
-        probBe = 61; probLon = 39;
-        lonBeReason = 'Nến ở ' + p + 'đ (cao hơn mốc chuẩn 810đ). Theo luật Mean Reversion, cược BÉ nuôi khung 2-3 kỳ đạt tỷ lệ ăn ' + lonBeConf + '!';
-      } else if (p <= 805) {
-        lonBeChoice = 'CANH LỚN (HỒI QUY)';
-        lonBeConf = (p <= 770 ? '91.9%' : '91.1%') + ' THẮNG';
-        lonBeTag = '🟢 HỒI QUY LỚN';
+      // Độc tôn suggestion variables
+      let soloBadge = 'MUA 100K [BÉ]';
+      let soloBadgeClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+      let soloReason = '';
+      let soloRate = 'Tỷ Lệ Ăn: ~58% K1';
+      let soloIconClass = 'text-emerald-400 bg-emerald-500/20 border-emerald-500/40';
+
+      if (beStreak >= 4) {
+        lonBeChoice = 'BẺ BỆT: ĐÁNH LỚN';
+        lonBeConf = '60.0% K1';
+        lonBeTag = '⚡ BẺ CẦU 4 BÉ';
+        probLon = 60; probBe = 40;
+        lonBeReason = 'Đã bệt liên tiếp ' + beStreak + ' cây Bé! Thống kê 224 kỳ Vietlott: Cây thứ 5 bẻ sang LỚN đạt 60.0% thắng K1.';
+        soloBadge = 'BẺ BỆT: MUA 100K [LỚN]';
+        soloBadgeClass = 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40';
+        soloReason = 'Bắt đáy bệt ' + beStreak + ' cây Bé liên tiếp. Dồn trọn 100k bẻ sang LỚN (Thắng 60.0%), bỏ hẳn Chẵn/Lẻ!';
+        soloRate = 'Tỷ Lệ Ăn: 60.0% K1';
+        soloIconClass = 'text-cyan-400 bg-cyan-500/20 border-cyan-500/40';
+      } else if (p >= 890) {
+        lonBeChoice = 'BẮN TỈA BÉ (ĐỈNH CỰC ĐẠI)';
+        lonBeConf = '60.0% K1';
+        lonBeTag = '🔥 SIÊU QUÁ MUA';
+        probBe = 60; probLon = 40;
+        lonBeReason = 'Nến ở đỉnh cực đại ' + p + 'đ (>=890đ quá mua cực hạn). Lực hồi quy kéo sụt về BÉ đạt 60.0% thắng K1.';
+        soloBadge = 'MUA 100K [BÉ]';
+        soloBadgeClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        soloReason = 'Nến chạm đỉnh ' + p + 'đ cực đại! Vào trọn 100k cửa BÉ (Thắng 60.0%), bỏ hẳn Chẵn/Lẻ để ăn trọn +100k lãi!';
+        soloRate = 'Tỷ Lệ Ăn: 60.0% K1';
+        soloIconClass = 'text-emerald-400 bg-emerald-500/20 border-emerald-500/40';
+      } else if (p <= 730) {
+        lonBeChoice = 'BẮN TỈA LỚN (ĐÁY CỰC SÂU)';
+        lonBeConf = '60.9% K1';
+        lonBeTag = '🔥 SIÊU QUÁ BÁN';
         probLon = 61; probBe = 39;
-        lonBeReason = 'Nến ở ' + p + 'đ (thấp hơn mốc chuẩn 810đ). Theo luật Mean Reversion, cược LỚN nuôi khung 2-3 kỳ đạt tỷ lệ ăn ' + lonBeConf + '!';
+        lonBeReason = 'Nến rơi xuống đáy ' + p + 'đ (<=730đ quá bán cực sâu). Lực gom mua đẩy bật về LỚN đạt kỷ lục 60.9% thắng K1.';
+        soloBadge = 'MUA 100K [LỚN]';
+        soloBadgeClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        soloReason = 'Nến chạm đáy ' + p + 'đ cực sâu! Vào trọn 100k cửa LỚN (Thắng 60.9%), bỏ hẳn Chẵn/Lẻ để ăn trọn +100k lãi!';
+        soloRate = 'Tỷ Lệ Ăn: 60.9% K1';
+        soloIconClass = 'text-emerald-400 bg-emerald-500/20 border-emerald-500/40';
+      } else if (p >= 850) {
+        lonBeChoice = 'CANH BÉ (HỒI QUY)';
+        lonBeConf = '56.6% K1';
+        lonBeTag = '🟢 HỒI QUY BÉ';
+        probBe = 57; probLon = 43;
+        lonBeReason = 'Nến ở ' + p + 'đ (cao hơn mốc chuẩn 810đ). Theo luật Mean Reversion, cược BÉ đạt tỷ lệ ăn 56.6% K1!';
+        soloBadge = 'MUA 100K [BÉ]';
+        soloBadgeClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        soloReason = 'Nến vượt đỉnh 850đ (đang ở ' + p + 'đ). Vào trọn 100k cửa BÉ (56.6% K1), không đánh cửa Chẵn/Lẻ!';
+        soloRate = 'Tỷ Lệ Ăn: 56.6% K1';
+        soloIconClass = 'text-emerald-400 bg-emerald-500/20 border-emerald-500/40';
+      } else if (p <= 770) {
+        lonBeChoice = 'CANH LỚN (HỒI QUY)';
+        lonBeConf = '56.0% K1';
+        lonBeTag = '🟢 HỒI QUY LỚN';
+        probLon = 56; probBe = 44;
+        lonBeReason = 'Nến ở ' + p + 'đ (thấp hơn mốc chuẩn 810đ). Theo luật Mean Reversion, cược LỚN đạt tỷ lệ ăn 56.0% K1!';
+        soloBadge = 'MUA 100K [LỚN]';
+        soloBadgeClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+        soloReason = 'Nến lọt đáy 770đ (đang ở ' + p + 'đ). Vào trọn 100k cửa LỚN (56.0% K1), không đánh cửa Chẵn/Lẻ!';
+        soloRate = 'Tỷ Lệ Ăn: 56.0% K1';
+        soloIconClass = 'text-emerald-400 bg-emerald-500/20 border-emerald-500/40';
       } else {
         isLonBe80 = false;
-        lonBeChoice = 'ĐỨNG NGOÀI (SÁT 810đ)';
-        lonBeConf = '<80% (50/50)';
-        lonBeConfClass = 'bg-rose-500/20 text-rose-300';
-        lonBeTag = 'RANH GIỚI 810đ';
+        lonBeChoice = 'VÙNG GIẰNG CO (50/50)';
+        lonBeConf = 'TRUNG LẬP';
+        lonBeConfClass = 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
+        lonBeTag = '⚠️ NÊN ĐỨNG NGOÀI';
         probLon = 50; probBe = 50;
-        lonBeReason = 'Nến sát ranh giới 810đ (±5đ). Vùng bẫy hòa 10-10, nên đứng ngoài 1 kỳ.';
+        lonBeReason = 'Nến ở ' + p + 'đ (sát tâm 810đ). Vùng ngẫu nhiên 50/50, không có lợi thế toán học, nên đứng ngoài.';
+        soloBadge = '⚠️ ĐỨNG NGOÀI (BẢO TOÀN VỐN)';
+        soloBadgeClass = 'bg-rose-500/20 text-rose-300 border border-rose-500/40';
+        soloReason = 'Nến đang ở ' + p + 'đ (vùng giằng co 50/50). Hôm nay NÊN ĐỨNG NGOÀI giữ trọn 100k vốn, không vào tiền!';
+        soloRate = 'Vùng Rủi Ro (50/50)';
+        soloIconClass = 'text-rose-400 bg-rose-500/20 border-rose-500/40';
       }
 
       // ==========================================
-      // KẾT QUẢ 2: PHÂN TÍCH CỬA CHẴN / LẺ (ĐỘ PHỦ 80%)
+      // KẾT QUẢ 2: PHÂN TÍCH CỬA CHẴN / LẺ
       // ==========================================
       let isChanLe80 = true;
       let chanLeChoice = 'THEO SÓNG CHẴN';
-      let chanLeConf = '78.8% THẮNG';
-      let chanLeConfClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';
+      let chanLeConf = '56.7% Thắng';
+      let chanLeConfClass = 'bg-purple-500/20 text-purple-300 border border-purple-500/40';
       let chanLeTag = '🟢 THEO SÓNG';
-      let probChan = 58;
-      let probLe = 42;
+      let probChan = 55;
+      let probLe = 45;
       let chanLeReason = '';
 
       if (chanStreak >= 3) {
         chanLeChoice = 'THEO CẦU CHẴN';
-        chanLeConf = chanStreak >= 4 ? '87.5% THẮNG' : '92.9% THẮNG';
+        chanLeConf = '56.7% Thắng';
         chanLeTag = '🟢 CẦU BỆT ' + chanStreak + ' CHẴN';
-        probChan = 72; probLe = 28;
-        chanLeReason = 'Xuất hiện cầu bệt ' + chanStreak + ' kỳ CHẴN liên tiếp! Kiểm định 206 kỳ thực tế: Theo cầu nổ tiếp CHẴN đạt tỷ lệ ăn kỷ lục ' + chanLeConf + '!';
+        probChan = 57; probLe = 43;
+        chanLeReason = 'Xuất hiện cầu bệt ' + chanStreak + ' kỳ CHẴN liên tiếp! Theo đà bệt Chẵn đạt 56.7% K1 (Cảnh giác bẫy Hòa 10-10).';
       } else if (leStreak >= 3) {
         chanLeChoice = 'THEO CẦU LẺ';
-        chanLeConf = '80.0% THẮNG';
+        chanLeConf = '53.0% Thắng';
         chanLeTag = '🟢 CẦU BỆT ' + leStreak + ' LẺ';
-        probLe = 68; probChan = 32;
-        chanLeReason = 'Xuất hiện cầu bệt ' + leStreak + ' kỳ LẺ liên tiếp! Kiểm định 206 kỳ thực tế: Theo cầu nổ tiếp LẺ đạt tỷ lệ ăn ' + chanLeConf + '!';
-      } else if (chanStreak === 2) {
-        chanLeChoice = 'THEO CẦU CHẴN';
-        chanLeConf = '78.8% THẮNG';
-        chanLeTag = '🟢 BỆT 2 CHẴN';
-        probChan = 62; probLe = 38;
-        chanLeReason = 'Bắt đầu nhịp bệt 2 kỳ CHẴN! Bám theo cầu Chẵn trong khung 2-3 kỳ đạt tỷ lệ thắng 78.8%.';
-      } else if (leStreak === 2) {
-        chanLeChoice = 'THEO CẦU LẺ';
-        chanLeConf = '78.9% THẮNG';
-        chanLeTag = '🟢 BỆT 2 LẺ';
-        probLe = 62; probChan = 38;
-        chanLeReason = 'Bắt đầu nhịp bệt 2 kỳ LẺ! Bám theo cầu Lẻ trong khung 2-3 kỳ đạt tỷ lệ thắng 78.9%.';
+        probLe = 53; probChan = 47;
+        chanLeReason = 'Xuất hiện cầu bệt ' + leStreak + ' kỳ LẺ liên tiếp! Theo đà bệt Lẻ (Cảnh giác bẫy Hòa 10-10).';
       } else if (lastOutcomeCL === 'CHẴN') {
         chanLeChoice = 'CANH CHẴN (K1)';
-        chanLeConf = '68.4% Thắng';
+        chanLeConf = '52.0% Thắng';
         chanLeConfClass = 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
         chanLeTag = 'THEO SÓNG CHẴN';
-        probChan = 58; probLe = 42;
-        chanLeReason = 'Kỳ trước vừa nổ Chẵn. Cược theo sóng Chẵn (đánh 1 kỳ hoặc nuôi 2 kỳ).';
+        probChan = 52; probLe = 48;
+        chanLeReason = 'Kỳ trước vừa nổ Chẵn. Cược theo sóng Chẵn (Lưu ý: 23.7% số kỳ ra Hòa 10-10 làm mất cược).';
       } else if (lastOutcomeCL === 'LẺ') {
         chanLeChoice = 'CANH LẺ (K1)';
-        chanLeConf = '65.0% Thắng';
+        chanLeConf = '52.0% Thắng';
         chanLeConfClass = 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
         chanLeTag = 'THEO SÓNG LẺ';
-        probLe = 58; probChan = 42;
-        chanLeReason = 'Kỳ trước vừa nổ Lẻ. Cược theo sóng Lẻ (đánh 1 kỳ hoặc nuôi 2 kỳ).';
+        probLe = 52; probChan = 48;
+        chanLeReason = 'Kỳ trước vừa nổ Lẻ. Cược theo sóng Lẻ (Lưu ý: 23.7% số kỳ ra Hòa 10-10 làm mất cược).';
       } else {
         isChanLe80 = false;
         chanLeChoice = 'ĐỨNG NGOÀI (VỪA HÒA)';
-        chanLeConf = '<80% (50/50)';
-        chanLeConfClass = 'bg-rose-500/20 text-rose-300';
+        chanLeConf = 'BẪY HÒA 10-10';
+        chanLeConfClass = 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
         chanLeTag = 'BẪY HÒA 10-10';
         probChan = 50; probLe = 50;
         chanLeReason = 'Kỳ trước vừa nổ Hòa (10C-10L). Cần chờ 1 kỳ định hình cầu mới.';
@@ -2524,21 +2584,37 @@
       // ==========================================
       // CỬA 3: NGUY CƠ HÒA (10-10)
       // ==========================================
-      let probHoa = 19.5;
-      let hoaTag = 'HÒA THẤP';
-      let hoaChoice = '19.5% (Thấp)';
-      let hoaReason = 'Biên độ nến dãn cách Pivot, nguy cơ rơi vào bẫy hòa (10L-10N hoặc 10C-10L) ở mức thấp.';
+      let probHoa = 20.3;
+      let hoaTag = 'HÒA BÌNH THƯỜNG';
+      let hoaChoice = '20.3% (Chuẩn)';
+      let hoaReason = 'Xác suất siêu bội lý thuyết Hòa 10-10 là 20.3%, thực tế 23.7%.';
       if (Math.abs(p - 810) <= 20) {
         probHoa = 28.5;
         hoaTag = 'CẢNH BÁO HÒA';
-        hoaChoice = '28.5% (Cao)';
+        hoaChoice = '28.5% (Tăng)';
         hoaReason = 'Nến đang nằm ngay sát mốc cân bằng 810đ! Nguy cơ nổ Hòa 10-10 tăng cao, cẩn thận!';
       }
 
       // ==========================================
-      // CẬP NHẬT GIAO DIỆN DOM (DUAL RESULTS)
+      // CẬP NHẬT GIAO DIỆN DOM
       // ==========================================
       
+      // 0. Cập nhật Banner Độc Tôn (Khuyến nghị 100k tại quầy)
+      const elSoloActionBadge = document.getElementById('aiSoloActionBadge');
+      const elSoloReason = document.getElementById('aiSoloReason');
+      const elSoloRateText = document.getElementById('aiSoloRateText');
+      const elSoloIconBox = document.getElementById('aiSoloIconBox');
+
+      if (elSoloActionBadge) {
+        elSoloActionBadge.textContent = soloBadge;
+        elSoloActionBadge.className = 'text-xs font-black px-2 py-0.5 rounded-md font-mono ' + soloBadgeClass;
+      }
+      if (elSoloReason) elSoloReason.textContent = soloReason;
+      if (elSoloRateText) elSoloRateText.textContent = soloRate;
+      if (elSoloIconBox) {
+        elSoloIconBox.className = 'w-9 h-9 rounded-lg flex items-center justify-center font-black flex-shrink-0 border ' + soloIconClass;
+      }
+
       // 1. Cập nhật Badge Top Master 1: LỚN / BÉ
       const elBadgeLonBe = document.getElementById('aiMasterBadgeLonBe');
       const elMasterLonBeChoice = document.getElementById('aiMasterLonBeChoice');
