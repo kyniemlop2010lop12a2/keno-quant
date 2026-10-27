@@ -617,7 +617,12 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname === '/api/stats' || pathname === '/api/predict') {
     const stats = getCachedStats();
-    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
     res.end(JSON.stringify(stats || { error: 'No data' }));
     return;
   }
@@ -625,7 +630,12 @@ const server = http.createServer(async (req, res) => {
   if (pathname === '/api/sync') {
     try {
       const result = await syncFromVietlott();
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.writeHead(200, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
       res.end(JSON.stringify({ success: true, result }));
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
