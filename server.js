@@ -93,6 +93,75 @@ function calculatePrediction(draws) {
   let probLon = Math.round((0.50 + (0.50 - bigRatio) * 0.4) * 80);
   let probNho = Math.round(80 - probLon);
 
+  // 3. Quantitative Multi-Strategy Vietlott Playslip Algorithm
+  const latestNums = latestDraw.numbers.map(n => parseInt(n, 10));
+  const latestEvens = latestNums.filter(n => n % 2 === 0).length;
+  const latestOdds = 20 - latestEvens;
+  const latestBigs = latestNums.filter(n => n > 40).length;
+  const latestSmalls = 20 - latestBigs;
+  const latestSum = latestNums.reduce((a, b) => a + b, 0);
+
+  // Compute Streaks
+  let streakBe = 0, streakLon = 0, streakChan = 0, streakLe = 0;
+  for (let i = 0; i < draws.length; i++) {
+    const s = draws[i].numbers.map(n => parseInt(n, 10)).reduce((a, b) => a + b, 0);
+    if (s < 810) { if (streakLon > 0) break; streakBe++; }
+    else if (s > 810) { if (streakBe > 0) break; streakLon++; }
+    else break;
+  }
+  for (let i = 0; i < draws.length; i++) {
+    const ev = draws[i].numbers.map(n => parseInt(n, 10)).filter(n => n % 2 === 0).length;
+    if (ev > 10) { if (streakLe > 0) break; streakChan++; }
+    else if (ev < 10) { if (streakChan > 0) break; streakLe++; }
+    else break;
+  }
+
+  // Rolling MA5 of evens
+  const maWin = Math.min(5, draws.length);
+  let sumEvensWin = 0;
+  for (let i = 0; i < maWin; i++) {
+    sumEvensWin += draws[i].numbers.map(n => parseInt(n, 10)).filter(n => n % 2 === 0).length;
+  }
+  const ma5Evens = sumEvensWin / maWin;
+
+  // Decision Logic for Vietlott Paper Playslip
+  let playslipAction = 'BOC_LOT_50_50';
+  let playslipBadge = '🛡️ BẢO TOÀN VỐN: [Chẵn 11-12: 50k] + [Hòa: 50k]';
+  let playslipBadgeClass = 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50';
+  let playslipTargetCheckbox = 'Tờ 1: [CHẴN 11-12] (50k) + Tờ 2: [HÒA C-L] (50k)';
+  let playslipRateText = 'Vùng Phủ: 51.3%';
+  let playslipReason = 'Thị trường đang dao động quanh vùng trung tâm (' + latestEvens + 'C - ' + latestOdds + 'L). Cược bọc lót phủ trọn 10, 11, 12 chẵn (xác suất 51.3%) để hoàn đủ 100k vốn an toàn!';
+
+  if (streakBe >= 3) {
+    playslipAction = 'STAND_OUT';
+    playslipBadge = '⚠️ CẢNH BÁO SÓNG XẢ BÉ: NÊN ĐỨNG NGOÀI!';
+    playslipBadgeClass = 'bg-rose-500/20 text-rose-300 border border-rose-500/50';
+    playslipTargetCheckbox = 'ĐỨNG NGOÀI (NÉ BÃO BÉ)';
+    playslipRateText = 'Né Rủi Ro';
+    playslipReason = 'Thị trường đang bệt ' + streakBe + ' cây BÉ liên tiếp. Tuyệt đối không cản tàu bắt đáy. Giữ nguyên 100k vốn!';
+  } else if (streakLon >= 3) {
+    playslipAction = 'STAND_OUT';
+    playslipBadge = '⚠️ CẢNH BÁO SÓNG ĐẨY LỚN: NÊN ĐỨNG NGOÀI!';
+    playslipBadgeClass = 'bg-rose-500/20 text-rose-300 border border-rose-500/50';
+    playslipTargetCheckbox = 'ĐỨNG NGOÀI (NÉ BÃO LỚN)';
+    playslipRateText = 'Né Rủi Ro';
+    playslipReason = 'Thị trường đang bệt ' + streakLon + ' cây LỚN liên tiếp. Đứng ngoài quan sát, không bẻ cầu!';
+  } else if (latestEvens <= 8 || (latestEvens <= 9 && ma5Evens < 9.5)) {
+    playslipAction = 'SNIPE_CHAN_11_12';
+    playslipBadge = '🎯 SĂN LÃI: [Chẵn 11-12: 100k] (ĂN 200k)';
+    playslipBadgeClass = 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50';
+    playslipTargetCheckbox = 'Bảng C: Ô [CHẴN 11-12] - Giá vé [100]';
+    playslipRateText = 'Săn Lãi: +100k';
+    playslipReason = 'Kỳ #' + latestDraw.drawId + ' nổ tới ' + latestOdds + ' quả LẺ (Chẵn bị nén sâu). Cơ hội bắt sóng hồi quy: Đánh trọn 100k vào [Chẵn 11-12] để ăn 200k (LÃI TRÒN +100k)!';
+  } else if (latestEvens >= 12 || (latestEvens >= 11 && ma5Evens > 10.5)) {
+    playslipAction = 'SNIPE_LE_11_12';
+    playslipBadge = '🎯 SĂN LÃI: [Lẻ 11-12: 100k] (ĂN 200k)';
+    playslipBadgeClass = 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/50';
+    playslipTargetCheckbox = 'Bảng C: Ô [LẺ 11-12] - Giá vé [100]';
+    playslipRateText = 'Săn Lãi: +100k';
+    playslipReason = 'Kỳ #' + latestDraw.drawId + ' nổ tới ' + latestEvens + ' quả CHẴN (Lẻ bị nén sâu). Cơ hội bắt sóng hồi quy: Đánh trọn 100k vào [Lẻ 11-12] để ăn 200k (LÃI TRÒN +100k)!';
+  }
+
   const top2Pair = [ballPredictions[0].ball, ballPredictions[1].ball];
   const top3Trio = [ballPredictions[0].ball, ballPredictions[1].ball, ballPredictions[2].ball];
   const top7Steiner = ballPredictions.slice(0, 7).map(b => b.ball);
@@ -109,6 +178,25 @@ function calculatePrediction(draws) {
     nextDrawId,
     targetDate: latestDraw.date,
     confidenceScore: '78.6%',
+    vietlottPlayslip: {
+      action: playslipAction,
+      badge: playslipBadge,
+      badgeClass: playslipBadgeClass,
+      targetCheckbox: playslipTargetCheckbox,
+      rateText: playslipRateText,
+      reason: playslipReason,
+      liveCounter: 'Kỳ #' + latestDraw.drawId + ': ' + latestEvens + 'C - ' + latestOdds + 'L | ' + latestBigs + ' Lớn - ' + latestSmalls + ' Nhỏ',
+      bestSingleBall: {
+        ball: ballPredictions[0].ball,
+        winProb: ballPredictions[0].predictedProb + '%',
+        desc: 'Bảng A: Chọn Bậc 1, tô số [' + ballPredictions[0].ball + '], giá vé [100k] (Ăn 200k)'
+      },
+      bestPair: {
+        balls: [ballPredictions[0].ball, ballPredictions[1].ball],
+        winProb: pairWinRate + '%',
+        desc: 'Bảng A: Chọn Bậc 2, tô 2 số [' + ballPredictions[0].ball + ', ' + ballPredictions[1].ball + '], giá vé [100k] (Ăn 900k)'
+      }
+    },
     parity: {
       chan: probChan + '%',
       le: probLe + '%',
