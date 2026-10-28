@@ -162,6 +162,81 @@ function calculatePrediction(draws) {
     playslipReason = 'Kỳ #' + latestDraw.drawId + ' nổ tới ' + latestEvens + ' quả CHẴN (Lẻ bị nén sâu). Cơ hội bắt sóng hồi quy: Đánh trọn 100k vào [Lẻ 11-12] để ăn 200k (LÃI TRÒN +100k)!';
   }
 
+  // 4. RADAR CHUYÊN SĂN VÉ 13 SỐ (ĂN 400K - 200 TRIỆU)
+  let gapChan13 = 0, gapLe13 = 0;
+  let foundChan13 = false, foundLe13 = false;
+  let lastChanDraw13 = null, lastLeDraw13 = null;
+
+  for (let i = 0; i < draws.length; i++) {
+    const d = draws[i];
+    const nums = d.numbers.map(n => parseInt(n, 10));
+    const ev = nums.filter(n => n % 2 === 0).length;
+    const od = 20 - ev;
+
+    if (!foundChan13) {
+      if (ev >= 13) {
+        foundChan13 = true;
+        lastChanDraw13 = { drawId: d.drawId, evens: ev, date: d.date, gap: gapChan13 };
+      } else {
+        gapChan13++;
+      }
+    }
+    if (!foundLe13) {
+      if (od >= 13) {
+        foundLe13 = true;
+        lastLeDraw13 = { drawId: d.drawId, odds: od, date: d.date, gap: gapLe13 };
+      } else {
+        gapLe13++;
+      }
+    }
+    if (foundChan13 && foundLe13) break;
+  }
+
+  let hunterMode = 'THEO_DÕI';
+  let hunterBadge = '⏳ ĐANG TÍCH TỤ NÉN BÓNG';
+  let hunterBadgeClass = 'bg-slate-800 text-slate-300 border border-slate-700';
+  let hunterTarget = 'Chưa vào điểm nổ';
+  let hunterReason = '';
+
+  if (gapLe13 >= 8) {
+    hunterMode = 'SĂN_LẺ_13';
+    hunterBadge = '🚨 ĐỈNH ĐIỂM NÉN: SĂN [LẺ >= 13] (ĂN 400K - 200TR)';
+    hunterBadgeClass = 'bg-rose-500/20 text-rose-300 border border-rose-500/60 animate-pulse';
+    hunterTarget = 'Bảng C: Ô [LẺ] (Cột 8 ngoài cùng bên trái) - Giá vé [100k]';
+    hunterReason = 'Đã ' + gapLe13 + ' kỳ liên tiếp chưa nổ Lẻ >= 13 (Vượt mức trung bình 8.6 kỳ). Lực nén Lẻ đạt đỉnh điểm! Đánh 100k vào ô [LẺ]: Nổ 13-14 quả ăn 400k (LÃI +300k), nổ >=15 quả ăn 200 TRIỆU!';
+  } else if (gapChan13 >= 8) {
+    hunterMode = 'SĂN_CHẴN_13';
+    hunterBadge = '🚨 ĐỈNH ĐIỂM NÉN: SĂN [CHẴN >= 13] (ĂN 400K - 200TR)';
+    hunterBadgeClass = 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/60 animate-pulse';
+    hunterTarget = 'Bảng C: Ô [CHẴN] (Cột 4 từ phải sang) - Giá vé [100k]';
+    hunterReason = 'Đã ' + gapChan13 + ' kỳ liên tiếp chưa nổ Chẵn >= 13 (Vượt mức trung bình 8.6 kỳ). Lực nén Chẵn đạt đỉnh điểm! Đánh 100k vào ô [CHẴN]: Nổ 13-14 quả ăn 400k (LÃI +300k), nổ >=15 quả ăn 200 TRIỆU!';
+  } else if (gapLe13 >= gapChan13) {
+    hunterMode = 'NÉN_LẺ';
+    hunterBadge = '⚡ NÉN LẺ CẤP ' + gapLe13 + '/8 (SẮP VÀO ĐIỂM NỔ)';
+    hunterBadgeClass = 'bg-amber-500/20 text-amber-300 border border-amber-500/40';
+    hunterTarget = 'Bảng C: Ô [LẺ] (Chuẩn bị điểm nổ)';
+    hunterReason = 'Lẻ >= 13 đã nén được ' + gapLe13 + ' kỳ (Lần nổ gần nhất kỳ #' + (lastLeDraw13 ? lastLeDraw13.drawId : '') + ' nổ ' + (lastLeDraw13 ? lastLeDraw13.odds : '') + ' quả lẻ). Đang tích lũy!';
+  } else {
+    hunterMode = 'NÉN_CHẴN';
+    hunterBadge = '⚡ NÉN CHẴN CẤP ' + gapChan13 + '/8 (SẮP VÀO ĐIỂM NỔ)';
+    hunterBadgeClass = 'bg-blue-500/20 text-blue-300 border border-blue-500/40';
+    hunterTarget = 'Bảng C: Ô [CHẴN] (Chuẩn bị điểm nổ)';
+    hunterReason = 'Chẵn >= 13 đã nén được ' + gapChan13 + ' kỳ (Lần nổ gần nhất kỳ #' + (lastChanDraw13 ? lastChanDraw13.drawId : '') + ' nổ ' + (lastChanDraw13 ? lastChanDraw13.evens : '') + ' quả chẵn).';
+  }
+
+  const hunter13 = {
+    gapChan13,
+    gapLe13,
+    lastChanDraw: lastChanDraw13,
+    lastLeDraw: lastLeDraw13,
+    hunterMode,
+    hunterBadge,
+    hunterBadgeClass,
+    hunterTarget,
+    hunterReason,
+    payoutInfo: 'Trúng 13-14 số ăn 400.000đ (Lời 300k) | Trúng >=15 số ăn 200.000.000đ'
+  };
+
   const top2Pair = [ballPredictions[0].ball, ballPredictions[1].ball];
   const top3Trio = [ballPredictions[0].ball, ballPredictions[1].ball, ballPredictions[2].ball];
   const top7Steiner = ballPredictions.slice(0, 7).map(b => b.ball);
@@ -195,7 +270,8 @@ function calculatePrediction(draws) {
         balls: [ballPredictions[0].ball, ballPredictions[1].ball],
         winProb: pairWinRate + '%',
         desc: 'Bảng A: Chọn Bậc 2, tô 2 số [' + ballPredictions[0].ball + ', ' + ballPredictions[1].ball + '], giá vé [100k] (Ăn 900k)'
-      }
+      },
+      hunter13: hunter13
     },
     parity: {
       chan: probChan + '%',

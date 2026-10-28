@@ -692,6 +692,56 @@
 
         </div>
 
+        <!-- BẢNG RADAR CHUYÊN SĂN VÉ 13 SỐ (ĂN 400.000đ - 200.000.000đ) -->
+        <div id="aiHunter13Box" class="p-3 sm:p-4 rounded-xl bg-gradient-to-r from-purple-950/70 via-slate-900 to-indigo-950/70 border-2 border-purple-400/80 shadow-2xl relative z-10 space-y-3 transition-all duration-300">
+          
+          <!-- Top Row Header -->
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-purple-500/30 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-ping"></span>
+              <span class="text-xs uppercase font-black tracking-wider text-purple-300 font-mono flex items-center gap-1.5">
+                <i data-lucide="crosshair" class="w-4 h-4 text-purple-400"></i> RADAR SĂN VÉ 13 SỐ (CƯỢC 100K ĂN 400K - 200 TRIỆU):
+              </span>
+            </div>
+            <div class="text-[10px] font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-md">
+              Thưởng: 13-14 số ăn 400k | >=15 số ăn 200 Triệu
+            </div>
+          </div>
+
+          <!-- Radar Status & Action -->
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="space-y-1.5 max-w-xl">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs text-slate-300 font-semibold">TÍN HIỆU SĂN VÉ:</span>
+                <span id="aiHunter13Badge" class="text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono tracking-wide">
+                  ⚡ ĐANG THEO DÕI NÉN BÓNG
+                </span>
+              </div>
+              <div class="text-xs font-mono text-purple-200">
+                👉 VỊ TRÍ TÔ PHIẾU: <strong id="aiHunter13Target" class="text-amber-300">Đang phân tích...</strong>
+              </div>
+              <p id="aiHunter13Reason" class="text-xs text-slate-300 font-sans leading-relaxed">
+                Đang quét chu kỳ nén bóng 13 số trên toàn bộ lịch sử quay thực tế...
+              </p>
+            </div>
+
+            <!-- Gaps Metric Indicators -->
+            <div class="flex items-center gap-3 bg-[#141824] p-2.5 rounded-lg border border-[#2a2e39] text-xs font-mono">
+              <div class="text-center px-2 border-r border-slate-700">
+                <div class="text-[10px] text-slate-400">Nén Chẵn >=13</div>
+                <div id="aiHunterGapChan" class="text-base font-black text-cyan-400">-- kỳ</div>
+                <div class="text-[9px] text-slate-500">Mốc nổ: ~8 kỳ</div>
+              </div>
+              <div class="text-center px-2">
+                <div class="text-[10px] text-slate-400">Nén Lẻ >=13</div>
+                <div id="aiHunterGapLe" class="text-base font-black text-rose-400">-- kỳ</div>
+                <div class="text-[9px] text-slate-500">Mốc nổ: ~8 kỳ</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5 relative z-10 font-mono text-xs">
           
           <!-- Box 1: KẾT QUẢ CỬA 1 (LỚN / BÉ) -->
@@ -2580,6 +2630,25 @@
       }
       if (elSoloReason) elSoloReason.textContent = soloReason;
       if (elSoloRateText) elSoloRateText.textContent = soloRate;
+
+      // Cập nhật Radar Săn Vé 13 Số
+      const elHunterBadge = document.getElementById('aiHunter13Badge');
+      const elHunterTarget = document.getElementById('aiHunter13Target');
+      const elHunterReason = document.getElementById('aiHunter13Reason');
+      const elHunterGapChan = document.getElementById('aiHunterGapChan');
+      const elHunterGapLe = document.getElementById('aiHunterGapLe');
+
+      if (appData && appData.prediction && appData.prediction.vietlottPlayslip && appData.prediction.vietlottPlayslip.hunter13) {
+        const h = appData.prediction.vietlottPlayslip.hunter13;
+        if (elHunterBadge) {
+          elHunterBadge.textContent = h.hunterBadge;
+          elHunterBadge.className = 'text-xs sm:text-sm font-black px-2.5 py-1 rounded-lg font-mono tracking-wide ' + h.hunterBadgeClass;
+        }
+        if (elHunterTarget) elHunterTarget.textContent = h.hunterTarget;
+        if (elHunterReason) elHunterReason.textContent = h.hunterReason;
+        if (elHunterGapChan) elHunterGapChan.textContent = h.gapChan13 + ' kỳ';
+        if (elHunterGapLe) elHunterGapLe.textContent = h.gapLe13 + ' kỳ';
+      }
 
       // Master Badge 1: Lớn / Bé
       const elBadgeLonBe = document.getElementById('aiMasterBadgeLonBe');
